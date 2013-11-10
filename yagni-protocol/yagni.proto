@@ -1,0 +1,66 @@
+package protocol;
+
+option java_package = "io.yagni.protocol";
+option java_outer_classname = "YagniProtocol";
+
+enum PropertyType {
+    numeric = 0;
+    string = 1;
+    boolean = 2;
+    json = 3;
+  }
+
+message PropertyDefinition { 
+	required string name = 1;
+	required PropertyType type = 2;
+	optional string unit = 3;
+	optional string symbol = 4;
+}
+
+message ResponseType {
+  repeated PropertyDefinition property = 4;
+}
+
+message Event { 
+	required string name = 1;
+	repeated PropertyDefinition property = 4;
+}
+
+message Operation {
+	required string name = 1;
+	repeated PropertyDefinition property = 2;
+	optional ResponseType response = 3;
+}
+
+message ContainedDevice {
+	required string id = 1;
+	required string deviceTypeId = 2;
+}
+
+message DeviceType {
+  required string id = 1;
+  repeated string extends = 2;
+  repeated ContainedDevice containedDevice = 3;
+  repeated PropertyDefinition property = 4;
+  repeated Operation operation = 5;
+  repeated Event event = 6;
+}
+
+message Property {
+	required string name = 1;
+	required string value = 2;
+	required PropertyDefinition def = 3;
+}
+
+message Device {
+	required string id = 1;
+	required string type = 2;
+	repeated Property property = 3;
+	repeated Device subDevice = 4;
+}
+
+message PropertyUpdate { 
+	required string deviceId = 1;
+	required string propertyId = 2;
+	required string value = 3;
+}
