@@ -1,9 +1,0 @@
-[submodule "yagni-protocol"]
-	path = yagni-protocol
-	url = git@github.com:yagni/yagni-protocol.git
-[submodule "yagni-edge"]
-	path = yagni-edge
-	url = git@github.com:yagni/yagni-edge.git
-[submodule "yagni-central"]
-	path = yagni-central
-	url = git@github.com:yagni/yagni-central.git
