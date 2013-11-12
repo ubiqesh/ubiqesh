@@ -14,49 +14,49 @@ public final class YagniProtocol {
   public enum PropertyType
       implements com.google.protobuf.ProtocolMessageEnum {
     /**
-     * <code>numeric = 0;</code>
+     * <code>numericProperty = 0;</code>
      */
-    numeric(0, 0),
+    numericProperty(0, 0),
     /**
-     * <code>string = 1;</code>
+     * <code>stringProperty = 1;</code>
      */
-    string(1, 1),
+    stringProperty(1, 1),
     /**
-     * <code>boolean = 2;</code>
+     * <code>booleanProperty = 2;</code>
      */
-    boolean(2, 2),
+    booleanProperty(2, 2),
     /**
-     * <code>json = 3;</code>
+     * <code>jsonProperty = 3;</code>
      */
-    json(3, 3),
+    jsonProperty(3, 3),
     ;
 
     /**
-     * <code>numeric = 0;</code>
+     * <code>numericProperty = 0;</code>
      */
-    public static final int numeric_VALUE = 0;
+    public static final int numericProperty_VALUE = 0;
     /**
-     * <code>string = 1;</code>
+     * <code>stringProperty = 1;</code>
      */
-    public static final int string_VALUE = 1;
+    public static final int stringProperty_VALUE = 1;
     /**
-     * <code>boolean = 2;</code>
+     * <code>booleanProperty = 2;</code>
      */
-    public static final int boolean_VALUE = 2;
+    public static final int booleanProperty_VALUE = 2;
     /**
-     * <code>json = 3;</code>
+     * <code>jsonProperty = 3;</code>
      */
-    public static final int json_VALUE = 3;
+    public static final int jsonProperty_VALUE = 3;
 
 
     public final int getNumber() { return value; }
 
     public static PropertyType valueOf(int value) {
       switch (value) {
-        case 0: return numeric;
-        case 1: return string;
-        case 2: return boolean;
-        case 3: return json;
+        case 0: return numericProperty;
+        case 1: return stringProperty;
+        case 2: return booleanProperty;
+        case 3: return jsonProperty;
         default: return null;
       }
     }
@@ -430,7 +430,7 @@ public final class YagniProtocol {
 
     private void initFields() {
       name_ = "";
-      type_ = io.yagni.protocol.YagniProtocol.PropertyType.numeric;
+      type_ = io.yagni.protocol.YagniProtocol.PropertyType.numericProperty;
       unit_ = "";
       symbol_ = "";
     }
@@ -609,7 +609,7 @@ public final class YagniProtocol {
         super.clear();
         name_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
-        type_ = io.yagni.protocol.YagniProtocol.PropertyType.numeric;
+        type_ = io.yagni.protocol.YagniProtocol.PropertyType.numericProperty;
         bitField0_ = (bitField0_ & ~0x00000002);
         unit_ = "";
         bitField0_ = (bitField0_ & ~0x00000004);
@@ -803,7 +803,7 @@ public final class YagniProtocol {
       }
 
       // required .protocol.PropertyType type = 2;
-      private io.yagni.protocol.YagniProtocol.PropertyType type_ = io.yagni.protocol.YagniProtocol.PropertyType.numeric;
+      private io.yagni.protocol.YagniProtocol.PropertyType type_ = io.yagni.protocol.YagniProtocol.PropertyType.numericProperty;
       /**
        * <code>required .protocol.PropertyType type = 2;</code>
        */
@@ -833,7 +833,7 @@ public final class YagniProtocol {
        */
       public Builder clearType() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        type_ = io.yagni.protocol.YagniProtocol.PropertyType.numeric;
+        type_ = io.yagni.protocol.YagniProtocol.PropertyType.numericProperty;
         onChanged();
         return this;
       }
@@ -9521,10 +9521,11 @@ public final class YagniProtocol {
       "pe\030\002 \002(\t\022$\n\010property\030\003 \003(\0132\022.protocol.Pr",
       "operty\022#\n\tsubDevice\030\004 \003(\0132\020.protocol.Dev" +
       "ice\"E\n\016PropertyUpdate\022\020\n\010deviceId\030\001 \002(\t\022" +
-      "\022\n\npropertyId\030\002 \002(\t\022\r\n\005value\030\003 \002(\t*>\n\014Pr" +
-      "opertyType\022\013\n\007numeric\020\000\022\n\n\006string\020\001\022\013\n\007b" +
-      "oolean\020\002\022\010\n\004json\020\003B\"\n\021io.yagni.protocolB" +
-      "\rYagniProtocol"
+      "\022\n\npropertyId\030\002 \002(\t\022\r\n\005value\030\003 \002(\t*^\n\014Pr" +
+      "opertyType\022\023\n\017numericProperty\020\000\022\022\n\016strin" +
+      "gProperty\020\001\022\023\n\017booleanProperty\020\002\022\020\n\014json" +
+      "Property\020\003B\"\n\021io.yagni.protocolB\rYagniPr" +
+      "otocol"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {

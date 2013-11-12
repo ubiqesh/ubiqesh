@@ -45,14 +45,14 @@ class Device;
 class PropertyUpdate;
 
 enum PropertyType {
-  numeric = 0,
-  string = 1,
-  boolean = 2,
-  json = 3
+  numericProperty = 0,
+  stringProperty = 1,
+  booleanProperty = 2,
+  jsonProperty = 3
 };
 bool PropertyType_IsValid(int value);
-const PropertyType PropertyType_MIN = numeric;
-const PropertyType PropertyType_MAX = json;
+const PropertyType PropertyType_MIN = numericProperty;
+const PropertyType PropertyType_MAX = jsonProperty;
 const int PropertyType_ARRAYSIZE = PropertyType_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* PropertyType_descriptor();

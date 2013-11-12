@@ -297,10 +297,11 @@ void protobuf_AddDesc_yagni_2eproto() {
     "pe\030\002 \002(\t\022$\n\010property\030\003 \003(\0132\022.protocol.Pr"
     "operty\022#\n\tsubDevice\030\004 \003(\0132\020.protocol.Dev"
     "ice\"E\n\016PropertyUpdate\022\020\n\010deviceId\030\001 \002(\t\022"
-    "\022\n\npropertyId\030\002 \002(\t\022\r\n\005value\030\003 \002(\t*>\n\014Pr"
-    "opertyType\022\013\n\007numeric\020\000\022\n\n\006string\020\001\022\013\n\007b"
-    "oolean\020\002\022\010\n\004json\020\003B\"\n\021io.yagni.protocolB"
-    "\rYagniProtocol", 1014);
+    "\022\n\npropertyId\030\002 \002(\t\022\r\n\005value\030\003 \002(\t*^\n\014Pr"
+    "opertyType\022\023\n\017numericProperty\020\000\022\022\n\016strin"
+    "gProperty\020\001\022\023\n\017booleanProperty\020\002\022\020\n\014json"
+    "Property\020\003B\"\n\021io.yagni.protocolB\rYagniPr"
+    "otocol", 1046);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "yagni.proto", &protobuf_RegisterTypes);
   PropertyDefinition::default_instance_ = new PropertyDefinition();

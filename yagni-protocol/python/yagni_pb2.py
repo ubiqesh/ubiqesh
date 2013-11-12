@@ -14,7 +14,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='yagni.proto',
   package='protocol',
-  serialized_pb='\n\x0byagni.proto\x12\x08protocol\"f\n\x12PropertyDefinition\x12\x0c\n\x04name\x18\x01 \x02(\t\x12$\n\x04type\x18\x02 \x02(\x0e\x32\x16.protocol.PropertyType\x12\x0c\n\x04unit\x18\x03 \x01(\t\x12\x0e\n\x06symbol\x18\x04 \x01(\t\">\n\x0cResponseType\x12.\n\x08property\x18\x04 \x03(\x0b\x32\x1c.protocol.PropertyDefinition\"E\n\x05\x45vent\x12\x0c\n\x04name\x18\x01 \x02(\t\x12.\n\x08property\x18\x04 \x03(\x0b\x32\x1c.protocol.PropertyDefinition\"s\n\tOperation\x12\x0c\n\x04name\x18\x01 \x02(\t\x12.\n\x08property\x18\x02 \x03(\x0b\x32\x1c.protocol.PropertyDefinition\x12(\n\x08response\x18\x03 \x01(\x0b\x32\x16.protocol.ResponseType\"3\n\x0f\x43ontainedDevice\x12\n\n\x02id\x18\x01 \x02(\t\x12\x14\n\x0c\x64\x65viceTypeId\x18\x02 \x02(\t\"\xd5\x01\n\nDeviceType\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0f\n\x07\x65xtends\x18\x02 \x03(\t\x12\x32\n\x0f\x63ontainedDevice\x18\x03 \x03(\x0b\x32\x19.protocol.ContainedDevice\x12.\n\x08property\x18\x04 \x03(\x0b\x32\x1c.protocol.PropertyDefinition\x12&\n\toperation\x18\x05 \x03(\x0b\x32\x13.protocol.Operation\x12\x1e\n\x05\x65vent\x18\x06 \x03(\x0b\x32\x0f.protocol.Event\"R\n\x08Property\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\t\x12)\n\x03\x64\x65\x66\x18\x03 \x02(\x0b\x32\x1c.protocol.PropertyDefinition\"m\n\x06\x44\x65vice\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04type\x18\x02 \x02(\t\x12$\n\x08property\x18\x03 \x03(\x0b\x32\x12.protocol.Property\x12#\n\tsubDevice\x18\x04 \x03(\x0b\x32\x10.protocol.Device\"E\n\x0ePropertyUpdate\x12\x10\n\x08\x64\x65viceId\x18\x01 \x02(\t\x12\x12\n\npropertyId\x18\x02 \x02(\t\x12\r\n\x05value\x18\x03 \x02(\t*>\n\x0cPropertyType\x12\x0b\n\x07numeric\x10\x00\x12\n\n\x06string\x10\x01\x12\x0b\n\x07\x62oolean\x10\x02\x12\x08\n\x04json\x10\x03\x42\"\n\x11io.yagni.protocolB\rYagniProtocol')
+  serialized_pb='\n\x0byagni.proto\x12\x08protocol\"f\n\x12PropertyDefinition\x12\x0c\n\x04name\x18\x01 \x02(\t\x12$\n\x04type\x18\x02 \x02(\x0e\x32\x16.protocol.PropertyType\x12\x0c\n\x04unit\x18\x03 \x01(\t\x12\x0e\n\x06symbol\x18\x04 \x01(\t\">\n\x0cResponseType\x12.\n\x08property\x18\x04 \x03(\x0b\x32\x1c.protocol.PropertyDefinition\"E\n\x05\x45vent\x12\x0c\n\x04name\x18\x01 \x02(\t\x12.\n\x08property\x18\x04 \x03(\x0b\x32\x1c.protocol.PropertyDefinition\"s\n\tOperation\x12\x0c\n\x04name\x18\x01 \x02(\t\x12.\n\x08property\x18\x02 \x03(\x0b\x32\x1c.protocol.PropertyDefinition\x12(\n\x08response\x18\x03 \x01(\x0b\x32\x16.protocol.ResponseType\"3\n\x0f\x43ontainedDevice\x12\n\n\x02id\x18\x01 \x02(\t\x12\x14\n\x0c\x64\x65viceTypeId\x18\x02 \x02(\t\"\xd5\x01\n\nDeviceType\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0f\n\x07\x65xtends\x18\x02 \x03(\t\x12\x32\n\x0f\x63ontainedDevice\x18\x03 \x03(\x0b\x32\x19.protocol.ContainedDevice\x12.\n\x08property\x18\x04 \x03(\x0b\x32\x1c.protocol.PropertyDefinition\x12&\n\toperation\x18\x05 \x03(\x0b\x32\x13.protocol.Operation\x12\x1e\n\x05\x65vent\x18\x06 \x03(\x0b\x32\x0f.protocol.Event\"R\n\x08Property\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\t\x12)\n\x03\x64\x65\x66\x18\x03 \x02(\x0b\x32\x1c.protocol.PropertyDefinition\"m\n\x06\x44\x65vice\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04type\x18\x02 \x02(\t\x12$\n\x08property\x18\x03 \x03(\x0b\x32\x12.protocol.Property\x12#\n\tsubDevice\x18\x04 \x03(\x0b\x32\x10.protocol.Device\"E\n\x0ePropertyUpdate\x12\x10\n\x08\x64\x65viceId\x18\x01 \x02(\t\x12\x12\n\npropertyId\x18\x02 \x02(\t\x12\r\n\x05value\x18\x03 \x02(\t*^\n\x0cPropertyType\x12\x13\n\x0fnumericProperty\x10\x00\x12\x12\n\x0estringProperty\x10\x01\x12\x13\n\x0f\x62ooleanProperty\x10\x02\x12\x10\n\x0cjsonProperty\x10\x03\x42\"\n\x11io.yagni.protocolB\rYagniProtocol')
 
 _PROPERTYTYPE = _descriptor.EnumDescriptor(
   name='PropertyType',
@@ -23,33 +23,33 @@ _PROPERTYTYPE = _descriptor.EnumDescriptor(
   file=DESCRIPTOR,
   values=[
     _descriptor.EnumValueDescriptor(
-      name='numeric', index=0, number=0,
+      name='numericProperty', index=0, number=0,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='string', index=1, number=1,
+      name='stringProperty', index=1, number=1,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='boolean', index=2, number=2,
+      name='booleanProperty', index=2, number=2,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='json', index=3, number=3,
+      name='jsonProperty', index=3, number=3,
       options=None,
       type=None),
   ],
   containing_type=None,
   options=None,
   serialized_start=916,
-  serialized_end=978,
+  serialized_end=1010,
 )
 
 PropertyType = enum_type_wrapper.EnumTypeWrapper(_PROPERTYTYPE)
-numeric = 0
-string = 1
-boolean = 2
-json = 3
+numericProperty = 0
+stringProperty = 1
+booleanProperty = 2
+jsonProperty = 3
 
 
 

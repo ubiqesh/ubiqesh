@@ -4,10 +4,10 @@ option java_package = "io.yagni.protocol";
 option java_outer_classname = "YagniProtocol";
 
 enum PropertyType {
-    numeric = 0;
-    string = 1;
-    boolean = 2;
-    json = 3;
+    numericProperty = 0;
+    stringProperty = 1;
+    booleanProperty = 2;
+    jsonProperty = 3;
   }
 
 message PropertyDefinition { 
