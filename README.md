@@ -13,3 +13,6 @@ yagni is an easy to use machine to machine communication (private and public) cl
 Private cloud: In a first step this will be one raspberry pi device (later we want to support also a mesh of devices and a seamless integration in the public device-cloud).
 
 Please have a look at the [Wiki](https://github.com/yagni/yagni/wiki/Documentation-Contents) for further infomation.
+
+Integration via travis-ci https://travis-ci.org/yagni/yagni
+[![Build Status](https://travis-ci.org/yagni/yagni.png?branch=master)](https://travis-ci.org/yagni/yagni)
