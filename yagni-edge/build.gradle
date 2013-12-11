@@ -1,14 +1,64 @@
 apply plugin: 'scala'
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'pkg4j'
 
-repositories {
-    mavenCentral()
-	maven { url = 'http://repo.spray.io' }
-}
+group = 'yagni'
+version = '1.0'
+
+sourceCompatibility = 1.7
+mainClassName = "io.yagni.edge.vertx.EdgeServer"
 
 dependencies {
     compile 'org.scala-lang:scala-library:2.10.3'
-    compile 'io.spray:spray-can:1.2-RC2'
-    compile 'io.spray:spray-routing:1.2-RC2'
-    compile 'io.spray:spray-testkit:1.2-RC2'
-    compile 'com.typesafe.akka:akka-actor_2.10:2.2.3'
+    compile 'com.lmax:disruptor:3.2.0'
+    compile 'joda-time:joda-time:2.2'
+    compile 'io.vertx:vertx-platform:2.0.0-final'
+    compile 'commons-cli:commons-cli:1.2'
+    compile 'io.spray:spray-json_2.10:1.2.5'
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Yagni Edge', 'Implementation-Version': 1.0
+    }
+}
+
+pkg {
+    name = "yagni-edge"
+    description = "yagni-edge app"
+    changes = "pkg/changelog.txt"
+    author = "Christoph Grotz <christoph.grotz@gmail.com>"
+
+    dirs {
+        create "/var/cache/yagni-edge", owner: "yagni-user"
+        pack dir: "pkg/etc", prefix: "/etc", mode: "775"
+        pack dir: "build/install/yagni-edge", prefix: "/usr/yagni-edge"
+    }
+
+    depends {
+        on "openjdk-7-jre | default-jre"
+    }
+
+    postinst { exec "update-rc.d yagni-edge defaults 90 20" }
+    prerm { exec "update-rc.d -f yagni-edge remove" }
+}
+
+buildDeb.dependsOn installApp
+
+// Pull the plugin from Maven Central
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jamel.pkg4j:pkg4j-gradle:0.0.5"
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url "http://repo.spray.io/"
+    }
 }
