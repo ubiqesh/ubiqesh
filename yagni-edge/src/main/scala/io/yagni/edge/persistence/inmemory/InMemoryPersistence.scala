@@ -30,11 +30,10 @@ class InMemoryPersistence(private var yagni: EdgeServer) extends Persistence {
     }
   }
 
-  private var model: JsonObject = new JsonObject()
+  private val model: JsonObject = new JsonObject()
 
   override def get(path: Path): AnyRef = {
-    if (path == null || io.yagni.edge.vertx.json.Node.getObjectForPath(model,path) == null ||
-      path.isEmtpy) {
+    if (path == null || path.isEmtpy) {
       model
     } else {
       io.yagni.edge.vertx.json.Node.getObjectForPath(model, path)
@@ -192,10 +191,10 @@ class InMemoryPersistence(private var yagni: EdgeServer) extends Persistence {
                node: JsonObject,
                payload: JsonObject) {
     for (key <- payload.getFieldNames) {
-      val value = payload.getField(key)
-      if (value.isInstanceOf[JsonObject]) {
+      val obj: AnyRef = payload.toMap.get(key)
+      if (obj.isInstanceOf[JsonObject]) {
         val childNode = new JsonObject()
-        populate(logBuilder.getChildLogBuilder(key), path.append(key), childNode, value.asInstanceOf[JsonObject])
+        populate(logBuilder.getChildLogBuilder(key), path.append(key), childNode, payload.getObject(key))
         if (node.getFieldNames.contains(key)) {
           node.putValue(key, childNode)
           logBuilder.addNew(key, childNode)
@@ -204,6 +203,7 @@ class InMemoryPersistence(private var yagni: EdgeServer) extends Persistence {
           logBuilder.addChangedNode(key, childNode)
         }
       } else {
+        val value: AnyRef = payload.getField(key)
         logBuilder.addNew(key, value)
         logBuilder.addChange(key, value)
         if (value == null) {

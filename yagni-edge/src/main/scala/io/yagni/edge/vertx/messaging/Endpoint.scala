@@ -378,9 +378,9 @@ class Endpoint(private var yagniSocket: OutboundSocket, private var persistence:
   }
 
   @Method
-  def set(@Param("path") path: String, @Param("data") data: AnyRef, @Param(value = "priority", defaultValue = "-1") priority: java.lang.Integer) {
+  def set(@Param("path") path: String, @Param("data") data: AnyRef) {
     LOGGER.trace("set")
-    val event = new StateChangeEvent(StateChangeEventType.SET, path, data, priority)
+    val event = new StateChangeEvent(StateChangeEventType.SET, path, data)
     this.yagni.handle(event)
   }
 
@@ -392,13 +392,6 @@ class Endpoint(private var yagniSocket: OutboundSocket, private var persistence:
   }
 
   @Method
-  def setPriority(@Param("path") path: String, @Param("priority") priority: java.lang.Integer) {
-    LOGGER.trace("setPriority")
-    val event = new StateChangeEvent(StateChangeEventType.SETPRIORITY, path, priority)
-    this.yagni.handle(event)
-  }
-
-  @Method
   def pushOnDisconnect(@Param("path") path: String, @Param("name") name: String, @Param("payload") payload: JsonObject) {
     LOGGER.trace("pushOnDisconnect")
     val event = new StateChangeEvent(StateChangeEventType.PUSH, path + "/" + name, payload)
@@ -406,9 +399,9 @@ class Endpoint(private var yagniSocket: OutboundSocket, private var persistence:
   }
 
   @Method
-  def setOnDisconnect(@Param("path") path: String, @Param("data") data: JsonObject, @Param(value = "priority", defaultValue = "-1") priority: java.lang.Integer) {
+  def setOnDisconnect(@Param("path") path: String, @Param("data") data: JsonObject) {
     LOGGER.trace("setOnDisconnect")
-    val event = new StateChangeEvent(StateChangeEventType.SET, path, data, priority)
+    val event = new StateChangeEvent(StateChangeEventType.SET, path, data)
     this.disconnectEvents.add(event)
   }
 

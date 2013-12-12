@@ -1,9 +1,10 @@
 package io.yagni.edge.vertx.rpc;
 
+import org.vertx.java.core.json.JsonObject;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class RpcMethodInstance {
     private Object instance;
@@ -15,7 +16,7 @@ public class RpcMethodInstance {
         this.method = method;
     }
 
-    public Object invoke(Map passedArgs) {
+    public Object invoke(JsonObject passedArgs) {
         try {
             List<Object> args = new ArrayList<Object>();
             for (Annotation[] annotations : method.getParameterAnnotations()) {
@@ -23,8 +24,8 @@ public class RpcMethodInstance {
                     if (annotation instanceof Param) {
                         if (passedArgs != null) {
                             Param param = (Param) annotation;
-                            if (passedArgs.containsKey(param.value())) {
-                                args.add(passedArgs.get(param.value()));
+                            if (passedArgs.getFieldNames().contains(param.value())) {
+                                args.add(passedArgs.getField(param.value()));
                             } else {
                                 if (param.defaultValue() != null || param.defaultValue().isEmpty()) {
                                     args.add(param.defaultValue());

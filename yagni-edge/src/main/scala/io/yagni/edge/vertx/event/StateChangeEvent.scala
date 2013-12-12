@@ -2,7 +2,6 @@ package io.yagni.edge.vertx.event
 
 import io.yagni.edge.common.Path
 import io.yagni.edge.vertx.event.changelog.ChangeLog
-import io.yagni.edge.vertx.json.Node
 import StateChangeEvent._
 import scala.reflect.BeanProperty
 import org.vertx.java.core.json.JsonObject
@@ -53,22 +52,7 @@ class StateChangeEvent extends JsonObject {
     this()
     putValue(StateChangeEvent.TYPE, `type`.toString)
     putValue(StateChangeEvent.PATH, path)
-  }
-
-  def this(`type`: StateChangeEventType.StateChangeEventType,
-           path: String,
-           data: AnyRef,
-           priority: java.lang.Integer) {
-    this()
-    putValue(StateChangeEvent.TYPE, `type`.toString)
-    putValue(StateChangeEvent.PATH, path)
-    putValue(StateChangeEvent.PAYLOAD, data)
-  }
-
-  def this(`type`: StateChangeEventType.StateChangeEventType, path: String, priority: java.lang.Integer) {
-    this()
-    putValue(StateChangeEvent.TYPE, `type`.toString)
-    putValue(StateChangeEvent.PATH, path)
+    putValue(StateChangeEvent.PAYLOAD, payload)
   }
 
   def this(`type`: StateChangeEventType.StateChangeEventType, path: String) {
@@ -76,6 +60,7 @@ class StateChangeEvent extends JsonObject {
     putValue(StateChangeEvent.TYPE, `type`.toString)
     putValue(StateChangeEvent.PATH, path)
   }
+
   def extractNodePath(): Path = {
     if (!getFieldNames.contains(StateChangeEvent.PATH)) {
       return null

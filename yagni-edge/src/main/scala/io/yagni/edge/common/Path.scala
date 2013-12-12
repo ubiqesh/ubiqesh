@@ -1,12 +1,11 @@
 package io.yagni.edge.common
 
-import java.util.Objects
 
 class Path(path: String) {
 
   private var elements: Array[String] = _
 
-  if (path == Nil || path.isEmpty) {
+  if (!(path == Nil || path.isEmpty)) {
     this.elements = getPathElements(path)
   }
 
@@ -56,10 +55,10 @@ class Path(path: String) {
 
   override def toString(): String = {
     var output = ""
-    for (element <- elements)
-    {  if (element != Nil || element.isEmpty) {
-      output += "/" + element
-    }
+    for (element <- elements) {
+      if (element != Nil || element.isEmpty) {
+        output += "/" + element
+      }
     }
     if (output.startsWith("/")) output else "/" + output
   }

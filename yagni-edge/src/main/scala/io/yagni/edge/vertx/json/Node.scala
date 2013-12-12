@@ -7,27 +7,28 @@ import io.yagni.edge.vertx.event.changelog.{ChangeLogBuilder, ChangeLog}
 object Node {
 
   def getObjectForPath(currentNode: JsonObject, path: Path): AnyRef = {
-    var node: AnyRef = null
     if (currentNode.getFieldNames.contains(path.getFirstElement)) {
-      val `object` = currentNode.getField(path.getFirstElement)
-      node = `object`
+      val obj = currentNode.toMap.get(path.getFirstElement)
+      if (obj.isInstanceOf[JsonObject]) {
+        return getObjectForPath(obj.asInstanceOf[JsonObject], path.getSubpath(1))
+      }
+      else {
+        currentNode.getField(path.getFirstElement)
+      }
     } else {
       if (path.getFirstElement == null) {
-        return this
+        return currentNode
       }
-      node = new JsonObject()
+      val node = new JsonObject()
       currentNode.putValue(path.getFirstElement, node)
-    }
-    if (node.isInstanceOf[JsonObject]) {
       return getObjectForPath(node.asInstanceOf[JsonObject], path.getSubpath(1))
     }
-    node
   }
 
   def getNodeForPath(currentNode: JsonObject,log: ChangeLog, path: Path): JsonObject = {
     var node: JsonObject = null
     val firstElement = path.getFirstElement
-    if (firstElement == null) {
+    if (firstElement == null || firstElement.isEmpty) {
       return currentNode
     }
     if (currentNode.getFieldNames.contains(firstElement)) {

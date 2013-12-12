@@ -29,7 +29,7 @@ class Rpc {
       response.putValue("id", id)
       try {
         val meth = methods.get(method).get
-        response.putValue("resp", meth.invoke(args.toMap()))
+        response.putValue("resp", meth.invoke(args))
         response.putValue("state", "ok")
         response.putValue("type", "rpc")
       } catch {
