@@ -7,7 +7,7 @@ group = 'yagni'
 version = '1.0'
 
 sourceCompatibility = 1.7
-mainClassName = "io.yagni.edge.vertx.EdgeServer"
+mainClassName = "io.yagni.edge.vertx.YagniEdgeServer"
 
 dependencies {
     compile 'org.scala-lang:scala-library:2.10.3'
@@ -31,7 +31,7 @@ pkg {
     author = "Christoph Grotz <christoph.grotz@gmail.com>"
 
     dirs {
-        create "/var/cache/yagni-edge", owner: "yagni-user"
+        create "/var/cache/yagni-edge", owner: "yagni-edge"
         pack dir: "pkg/etc", prefix: "/etc", mode: "775"
         pack dir: "build/install/yagni-edge", prefix: "/usr/yagni-edge"
     }
@@ -40,6 +40,9 @@ pkg {
         on "openjdk-7-jre | default-jre"
     }
 
+    preinst {
+        exec "adduser --system --group --home /var/lib/yagni-edge yagni-edge --quiet --gecos \"yagni-edge daemon\""
+    }
     postinst { exec "update-rc.d yagni-edge defaults 90 20" }
     prerm { exec "update-rc.d -f yagni-edge remove" }
 }
@@ -49,14 +52,16 @@ buildDeb.dependsOn installApp
 // Pull the plugin from Maven Central
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
     }
     dependencies {
-        classpath "org.jamel.pkg4j:pkg4j-gradle:0.0.5"
+        classpath "org.jamel.pkg4j:pkg4j-gradle:0.0.6-SNAPSHOT"
     }
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven {
         url "http://repo.spray.io/"
