@@ -6,7 +6,7 @@ import io.yagni.edge.vertx.event.StateChangeEvent
 import io.yagni.edge.vertx.event.StateChangeEventType
 import io.yagni.edge.vertx.messaging.Endpoint
 import io.yagni.edge.vertx.messaging.OutboundSocket
-import org.vertx.java.core.Handler
+import org.vertx.java.core.{Vertx, Handler}
 import org.vertx.java.core.buffer.Buffer
 import org.vertx.java.core.http.HttpServerRequest
 import org.vertx.java.core.http.ServerWebSocket
@@ -17,7 +17,7 @@ import org.vertx.java.core.json.JsonObject
 
 object EdgeServerHandler {
 
-  def readUrl(resource: URL):String = {
+  def readUrl(resource: URL): String = {
     val in = resource.openStream()
     val decoder = StandardCharsets.UTF_8.newDecoder()
     decoder.onMalformedInput(CodingErrorAction.IGNORE)
@@ -36,7 +36,7 @@ object EdgeServerHandler {
 
 }
 
-class EdgeServerHandler(var yagni: EdgeServer) {
+class EdgeServerHandler(var vertx: Vertx, var yagni: EdgeServer) {
 
   def getRestHttpHandler(): Handler[HttpServerRequest] = new YagniRestHttpHandler(yagni)
 
@@ -44,7 +44,7 @@ class EdgeServerHandler(var yagni: EdgeServer) {
 
   def getYagniFileHttpHandler(): Handler[HttpServerRequest] = new YagniFileHttpHandler()
 
-  def getWebUIHandler(): Handler[HttpServerRequest] = new WebUiHttpHandler()
+  def getWebUIHandler(): Handler[HttpServerRequest] = new WebUiHttpHandler(vertx)
 
   private class YagniWebsocketHandler extends Handler[ServerWebSocket] {
 
@@ -90,15 +90,16 @@ class YagniFileHttpHandler extends Handler[HttpServerRequest] {
   }
 
   private def loadJsFile(): String = {
+
     val uuid = Thread.currentThread().getContextClassLoader.getResource("uuid.js")
     val rpc = Thread.currentThread().getContextClassLoader.getResource("rpc.js")
     val reconnectingwebsocket = Thread.currentThread().getContextClassLoader.getResource("reconnecting-websocket.min.js")
     val yagni = Thread.currentThread().getContextClassLoader.getResource("yagni.js")
 
     EdgeServerHandler.readUrl(uuid) + "\r\n" +
-    EdgeServerHandler.readUrl(reconnectingwebsocket) +"\r\n" +
-    EdgeServerHandler.readUrl(rpc) + "\r\n" +
-    EdgeServerHandler.readUrl(yagni)
+      EdgeServerHandler.readUrl(reconnectingwebsocket) + "\r\n" +
+      EdgeServerHandler.readUrl(rpc) + "\r\n" +
+      EdgeServerHandler.readUrl(yagni)
   }
 }
 

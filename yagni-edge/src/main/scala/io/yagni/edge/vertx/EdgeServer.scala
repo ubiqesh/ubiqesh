@@ -7,10 +7,6 @@ import io.yagni.edge.vertx.event.StateChangeEvent
 import io.yagni.edge.vertx.event.StateChangeEventType
 import io.yagni.edge.vertx.event.changelog.ChangeLog
 import io.yagni.edge.vertx.messaging.Endpoint
-import org.apache.commons.cli.BasicParser
-import org.apache.commons.cli.HelpFormatter
-import org.apache.commons.cli.Options
-import org.apache.commons.cli.ParseException
 import org.vertx.java.core.VertxFactory
 import org.vertx.java.core.http.RouteMatcher
 import scala.reflect.BeanProperty
@@ -21,9 +17,9 @@ import scala.collection.mutable
 import scala.collection.JavaConversions._
 
 object YagniEdgeServer extends App {
-      new EdgeServer(8080).run()
-      while (true) {
-      }
+  new EdgeServer(8080).run()
+  while (true) {
+  }
 }
 
 class EdgeServer(private var port: Int) {
@@ -36,9 +32,9 @@ class EdgeServer(private var port: Int) {
   var endpoints: Set[Endpoint] = new mutable.HashSet[Endpoint]()
 
   def run() {
-    val rsh = new EdgeServerHandler(this)
     val vertx = VertxFactory.newVertx()
     val server = vertx.createHttpServer()
+    val rsh = new EdgeServerHandler(vertx, this)
     server.requestHandler(createRoutMatcher(rsh))
     server.websocketHandler(rsh.getWebsocketHandler)
     server.listen(8080)

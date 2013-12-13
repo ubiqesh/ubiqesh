@@ -1,25 +1,25 @@
 package io.yagni.edge.vertx
 
 import io.netty.handler.codec.http.HttpHeaders
-import org.vertx.java.core.Handler
+import org.vertx.java.core.{Vertx, Handler}
 import org.vertx.java.core.http.HttpServerRequest
 import org.vertx.java.core.http.impl.MimeMapping
 import java.io.{InputStreamReader, IOException}
-import scala.io.Source
 import java.net.URL
 import java.nio.charset.{CodingErrorAction, StandardCharsets}
 
-class WebUiHttpHandler extends Handler[HttpServerRequest] {
+class WebUiHttpHandler(var vertx: Vertx) extends Handler[HttpServerRequest] {
 
   override def handle(request: HttpServerRequest) {
     try {
-      var path = request.path()
+      var path = request.uri()
       if (path == "" || path == "/") {
         path = "index.html"
       }
       if (path.startsWith("/")) {
-        path.substring(1)
+        path = path.substring(1)
       }
+
       var resource = Thread.currentThread().getContextClassLoader.getResource("ui/" + path)
       if (resource != null) {
         val content = readUrl(resource)
@@ -34,7 +34,7 @@ class WebUiHttpHandler extends Handler[HttpServerRequest] {
         }
         request.response().end(content)
       } else {
-        resource = Thread.currentThread().getContextClassLoader.getResource("ui/404.html")
+        resource = this.getClass.getClassLoader.getResource("ui/404.html")
         val content = readUrl(resource)
         request.response().putHeader(HttpHeaders.Names.CONTENT_LENGTH, String.valueOf(content.length))
         val li = path.lastIndexOf('.')
