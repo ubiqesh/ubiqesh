@@ -6,21 +6,41 @@ import StateChangeEvent._
 import scala.reflect.BeanProperty
 import org.vertx.java.core.json.JsonObject
 
-//remove if not needed
-
-
+/**
+ *
+ * Abstraction for Events. Has helper methods for accessing the underlying JSON data.
+ *
+ *
+ * @author Christoph Grotz
+ *
+ */
 object StateChangeEvent {
 
+  /**
+   * Payload of the event
+   */
   val PAYLOAD = "payload"
 
-  val CREATION_DATE = "creationDate"
-
+  /**
+   * Type of the Event {@link RoadrunnerEventType}
+   */
   val TYPE = "type"
 
+  /**
+   * {@link Path} for the event
+   */
   val PATH = "path"
 
+  /**
+   * Name of the data element
+   */
   val NAME = "name"
 
+  /**
+   * @param url
+         * of the element
+   * @return the path representation
+   */
   def extractPath(url: String): String = {
     var result = url
     if (url.startsWith("http://")) {

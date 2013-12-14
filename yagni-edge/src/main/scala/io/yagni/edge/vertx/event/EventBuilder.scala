@@ -1,10 +1,6 @@
 package io.yagni.edge.vertx.event
 
-import java.util.Date
 import org.vertx.java.core.json.JsonObject
-
-//remove if not needed
-
 
 object EventBuilder {
 
@@ -26,11 +22,6 @@ class EventBuilder private() {
 
   def withPayload(payload: AnyRef): EventBuilder = {
     underConstruction.putValue(StateChangeEvent.PAYLOAD, payload)
-    this
-  }
-
-  def creationDate(date: Date): EventBuilder = {
-    underConstruction.putValue(StateChangeEvent.CREATION_DATE, date)
     this
   }
 

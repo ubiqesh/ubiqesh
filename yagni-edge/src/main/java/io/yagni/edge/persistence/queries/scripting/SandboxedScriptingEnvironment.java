@@ -11,7 +11,7 @@ import java.security.*;
 import java.security.cert.Certificate;
 
 /**
- * With security manager secured ScriptingEnvironment
+ * With security manager secured ScriptingEnvironment. For running Javascript on the Server with security constraint.
  *
  * @author Christoph Grotz
  */

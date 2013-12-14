@@ -5,9 +5,6 @@ import io.yagni.edge.common.Path
 import scala.reflect.BeanProperty
 import java.util
 
-//remove if not needed
-
-
 class ChangeLog {
 
   @BeanProperty

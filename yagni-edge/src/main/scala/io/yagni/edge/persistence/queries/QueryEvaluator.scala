@@ -2,22 +2,15 @@ package io.yagni.edge.persistence.queries
 
 import org.slf4j.LoggerFactory
 import io.yagni.edge.common.Path
-import io.yagni.edge.vertx.json.Node
 import io.yagni.edge.persistence.queries.scripting.SandboxedScriptingEnvironment
-import QueryEvaluator._
 import scala.collection.mutable
 import org.vertx.java.core.json.JsonObject
 
-//remove if not needed
-
 import scala.collection.JavaConversions._
 
-object QueryEvaluator {
+class QueryEvaluator {
 
   private val LOGGER = LoggerFactory.getLogger(classOf[QueryEvaluator])
-}
-
-class QueryEvaluator {
 
   var attached_queries: mutable.MultiMap[String, String] = new mutable.HashMap[String, mutable.Set[String]] with mutable.MultiMap[String, String]
 
@@ -27,8 +20,7 @@ class QueryEvaluator {
 
   def appliesToQuery(path: Path, value: AnyRef): Boolean = {
     for (queryStrs <- attached_queries.get(path.toString)) {
-      for(queryStr:String <- queryStrs)
-      {
+      for (queryStr: String <- queryStrs) {
         return evaluateQueryOnValue(value, queryStr)
       }
     }

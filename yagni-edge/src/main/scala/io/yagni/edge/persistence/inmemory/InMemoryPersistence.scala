@@ -40,7 +40,7 @@ class InMemoryPersistence(private var yagni: EdgeServer) extends Persistence {
     }
   }
 
-  override def getNode(path: Path): JsonObject = {
+  override def getJsonObject(path: Path): JsonObject = {
     val log = new ChangeLog()
     val nodeForPath = io.yagni.edge.vertx.json.Node.getNodeForPath(model, log, path)
     yagni.distributeChangeLog(log)
@@ -64,17 +64,14 @@ class InMemoryPersistence(private var yagni: EdgeServer) extends Persistence {
     val node = io.yagni.edge.vertx.json.Node.getNodeForPath(model, log, path)
     for (childNodeKey <- node.getFieldNames) {
       val element = node.getElement(childNodeKey)
-      if(element != null)
-      {
-        if(element.isObject)
-        {
+      if (element != null) {
+        if (element.isObject) {
           val obj = element.asObject()
           val hasChildren = !obj.getFieldNames().isEmpty
           val numChildren = obj.size()
           handler.fireChildAdded(childNodeKey, path, path.getParent, obj, hasChildren, numChildren)
         }
-        else
-        {
+        else {
           handler.fireChildAdded(childNodeKey, path, path.getParent, node.getValue(childNodeKey), false, 0)
         }
       }
@@ -156,7 +153,7 @@ class InMemoryPersistence(private var yagni: EdgeServer) extends Persistence {
                              payload: AnyRef) {
     try {
       var created = false
-      if (!io.yagni.edge.vertx.json.Node.pathExists(model,path)) {
+      if (!io.yagni.edge.vertx.json.Node.pathExists(model, path)) {
         created = true
       }
       val parent = io.yagni.edge.vertx.json.Node.getNodeForPath(model, log, path.getParent)
@@ -224,6 +221,7 @@ class InMemoryPersistence(private var yagni: EdgeServer) extends Persistence {
       addChangeEvent(log, path.getParent)
     }
   }
+
   def childCount(node: AnyRef): Long = {
     if ((node.isInstanceOf[JsonObject])) node.asInstanceOf[JsonObject].getFieldNames().size else 0
   }

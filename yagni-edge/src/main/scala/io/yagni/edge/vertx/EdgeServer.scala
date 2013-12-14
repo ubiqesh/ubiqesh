@@ -59,7 +59,7 @@ class EdgeServer(private var port: Int) {
 
   def distributeChangeLog(changeLog: ChangeLog) {
     for (endpoint <- this.endpoints) {
-      endpoint.distributeChangeLog(changeLog)
+      endpoint.distributeChangeLog(changeLog.getLog)
     }
   }
 

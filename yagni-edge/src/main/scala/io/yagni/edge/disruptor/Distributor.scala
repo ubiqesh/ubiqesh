@@ -1,15 +1,11 @@
 package io.yagni.edge.disruptor
 
-;
-
 import java.util.Set
 import io.yagni.edge.vertx.event.StateChangeEvent
 import io.yagni.edge.vertx.messaging.EventDistributor
-import io.yagni.edge.vertx.messaging.OutboundSocket
 import org.slf4j.LoggerFactory
 import com.lmax.disruptor.EventHandler
 import io.yagni.edge.common.Path
-import io.yagni.edge.vertx.json.Node
 import Distributor._
 import scala.reflect.BeanProperty
 import scala.collection.mutable
@@ -18,13 +14,11 @@ import scala.collection.JavaConversions._
 import org.vertx.java.core.json.JsonObject
 
 object Distributor {
-
-  private val logger = LoggerFactory.getLogger(classOf[Distributor])
+  val logger = LoggerFactory.getLogger(classOf[Distributor])
 }
 
 class Distributor extends EventHandler[StateChangeEvent] {
-
-  private var handlers: Set[EventDistributor] = new mutable.HashSet[EventDistributor]()
+  val handlers: Set[EventDistributor] = new mutable.HashSet[EventDistributor]()
 
   @BeanProperty
   var sequence: Long = _
@@ -51,7 +45,7 @@ class Distributor extends EventHandler[StateChangeEvent] {
     handlers.add(handler)
   }
 
-  def removeHandler(handler: OutboundSocket) {
+  def removeHandler(handler: EventDistributor) {
     handlers.remove(handler)
   }
 }

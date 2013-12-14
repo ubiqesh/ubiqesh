@@ -5,7 +5,6 @@ import java.io.{InputStreamReader, IOException}
 import io.yagni.edge.vertx.event.StateChangeEvent
 import io.yagni.edge.vertx.event.StateChangeEventType
 import io.yagni.edge.vertx.messaging.Endpoint
-import io.yagni.edge.vertx.messaging.OutboundSocket
 import org.vertx.java.core.{Vertx, Handler}
 import org.vertx.java.core.buffer.Buffer
 import org.vertx.java.core.http.HttpServerRequest
@@ -36,9 +35,9 @@ object EdgeServerHandler {
 
 }
 
-class EdgeServerHandler(var vertx: Vertx, var yagni: EdgeServer) {
+class EdgeServerHandler(var vertx: Vertx, var edgeServer: EdgeServer) {
 
-  def getRestHttpHandler(): Handler[HttpServerRequest] = new YagniRestHttpHandler(yagni)
+  def getRestHttpHandler(): Handler[HttpServerRequest] = new YagniRestHttpHandler(edgeServer)
 
   def getWebsocketHandler(): Handler[ServerWebSocket] = new YagniWebsocketHandler()
 
@@ -49,13 +48,9 @@ class EdgeServerHandler(var vertx: Vertx, var yagni: EdgeServer) {
   private class YagniWebsocketHandler extends Handler[ServerWebSocket] {
 
     override def handle(socket: ServerWebSocket) {
-      val endpoint = new Endpoint(new OutboundSocket() {
+      val endpoint = new Endpoint(socket, edgeServer.getPersistence, edgeServer)
+      edgeServer.addEndpoint(endpoint)
 
-        override def send(msg: String) {
-          socket.writeTextFrame(msg)
-        }
-      }, yagni.getPersistence, yagni)
-      yagni.addEndpoint(endpoint)
       socket.dataHandler(new Handler[Buffer]() {
 
         override def handle(event: Buffer) {
@@ -68,7 +63,7 @@ class EdgeServerHandler(var vertx: Vertx, var yagni: EdgeServer) {
         override def handle(arg0: Void) {
           endpoint.setOpen(false)
           endpoint.executeDisconnectEvents()
-          yagni.removeEndpoint(endpoint)
+          edgeServer.removeEndpoint(endpoint)
         }
       })
     }

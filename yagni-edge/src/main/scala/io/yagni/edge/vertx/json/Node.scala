@@ -25,7 +25,7 @@ object Node {
     }
   }
 
-  def getNodeForPath(currentNode: JsonObject,log: ChangeLog, path: Path): JsonObject = {
+  def getNodeForPath(currentNode: JsonObject, log: ChangeLog, path: Path): JsonObject = {
     var node: JsonObject = null
     val firstElement = path.getFirstElement
     if (firstElement == null || firstElement.isEmpty) {
@@ -82,35 +82,23 @@ object Node {
     node.putValue(key, value)
   }
 
-  def accept(node: JsonObject,path: Path, visitor: NodeVisitor) {
+  def accept(node: JsonObject, path: Path, visitor: NodeVisitor) {
     visitor.visitNode(path, node)
     val it = node.getFieldNames.iterator()
-    while (it.hasNext){
+    while (it.hasNext) {
       val key = it.next()
       val value = node.getField(key)
       if (value.isInstanceOf[JsonObject]) {
-        accept(value.asInstanceOf[JsonObject],path.append(key), visitor)
+        accept(value.asInstanceOf[JsonObject], path.append(key), visitor)
       } else {
         visitor.visitProperty(path, node, key, value)
       }
     }
   }
 
-  def populate(node: JsonObject, json: String) {
-    try
-    {
-      val obj = new JsonObject(json)
-      node.mergeIn(obj)
-    }
-    catch
-    {
-      case e: Exception => System.out.println(json); e.printStackTrace()
-    }
-  }
-
   def clear(node: JsonObject) {
     val it = node.getFieldNames.iterator()
-    while (it.hasNext){
+    while (it.hasNext) {
       val key = it.next()
       node.removeField(key)
     }
@@ -134,14 +122,39 @@ object Node {
     }
   }
 
-  def populate(logBuilder: ChangeLogBuilder,currentNode: JsonObject, payload: JsonObject) {
+  /**
+   *
+   * Populates the node with the handed json data
+   *
+   * @param node to populate
+   * @param json JSON Data as String
+   */
+  def populate(node: JsonObject, json: String) {
+    try {
+      val obj = new JsonObject(json)
+      node.mergeIn(obj)
+    }
+    catch {
+      case e: Exception => System.out.println(json); e.printStackTrace()
+    }
+  }
+
+  /**
+   *
+   * Populates the node with the handed json data. Also fills the changeLog with the changes done by the population.
+   *
+   * @param logBuilder log builder for the changelog
+   * @param currentNode node to populate
+   * @param payload data to prefill
+   */
+  def populate(logBuilder: ChangeLogBuilder, currentNode: JsonObject, payload: JsonObject) {
     val it = currentNode.getFieldNames.iterator()
-    while (it.hasNext){
+    while (it.hasNext) {
       val key = it.next()
       val value = payload.getField(key)
       if (value.isInstanceOf[JsonObject]) {
         val childNode = new JsonObject()
-        populate(logBuilder.getChildLogBuilder(key), childNode,value.asInstanceOf[JsonObject])
+        populate(logBuilder.getChildLogBuilder(key), childNode, value.asInstanceOf[JsonObject])
         if (currentNode.getFieldNames.contains(key)) {
           currentNode.putValue(key, childNode)
           logBuilder.addNew(key, childNode)

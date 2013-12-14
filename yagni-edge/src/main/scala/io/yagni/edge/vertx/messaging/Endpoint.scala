@@ -6,11 +6,7 @@ import io.yagni.edge.vertx.event.StateChangeEvent
 import io.yagni.edge.vertx.event.StateChangeEventType
 import org.slf4j.LoggerFactory
 import io.yagni.edge.common.Path
-import io.yagni.edge.vertx.event.changelog.ChangeLog
-import io.yagni.edge.vertx.event.changelog.ChildAddedLogEvent
-import io.yagni.edge.vertx.event.changelog.ChildChangedLogEvent
-import io.yagni.edge.vertx.event.changelog.ChildRemovedLogEvent
-import io.yagni.edge.vertx.event.changelog.ValueChangedLogEvent
+import io.yagni.edge.vertx.event.changelog._
 import io.yagni.edge.persistence.Persistence
 import io.yagni.edge.persistence.queries.QueryEvaluator
 import Endpoint._
@@ -19,52 +15,75 @@ import io.yagni.edge.vertx.rpc.{Rpc, Param, Method}
 import scala.collection.mutable
 import java.util
 import org.vertx.java.core.json.JsonObject
+import org.vertx.java.core.http.ServerWebSocket
 
 //remove if not needed
 
 import scala.collection.JavaConversions._
 
+/**
+ * Endpoint abstraction ( At the moment this class encapsulates an websocket client)
+ */
 object Endpoint {
+  val QUERY_CHILD_REMOVED = "query_child_removed"
 
-  private val QUERY_CHILD_REMOVED = "query_child_removed"
+  val QUERY_CHILD_CHANGED = "query_child_changed"
 
-  private val QUERY_CHILD_CHANGED = "query_child_changed"
+  val QUERY_CHILD_ADDED = "query_child_added"
 
-  private val QUERY_CHILD_ADDED = "query_child_added"
+  val CHILD_REMOVED = "child_removed"
 
-  private val CHILD_REMOVED = "child_removed"
+  val CHILD_CHANGED = "child_changed"
 
-  private val CHILD_MOVED = "child_moved"
+  val CHILD_ADDED = "child_added"
 
-  private val VALUE = "value"
+  val VALUE = "value"
 
-  private val CHILD_CHANGED = "child_changed"
-
-  private val CHILD_ADDED = "child_added"
-
-  private val LOGGER = LoggerFactory.getLogger(classOf[Endpoint])
+  val LOGGER = LoggerFactory.getLogger(classOf[Endpoint])
 }
 
-class Endpoint(private var yagniSocket: OutboundSocket, private var persistence: Persistence, private var yagni: EdgeServer)
-  extends EventDistributor with OutboundSocket {
+/**
+ * This class is a Endpoint abstraction ( At the moment this class encapsulates an websocket client)
+ * @param socket the outbound socket for sending data important for this socket
+ * @param persistence the persistence for storing state changes
+ * @param server the
+ */
+class Endpoint(var socket: ServerWebSocket, var persistence: Persistence, var server: EdgeServer)
+  extends EventDistributor {
 
-  private var attached_listeners: mutable.MultiMap[String, String] = new mutable.HashMap[String, mutable.Set[String]] with mutable.MultiMap[String, String]
+  /**
+   * map of the listeners attached. Key is the path, and the value are the events the listeners are attached to
+   */
+  val attached_listeners: mutable.MultiMap[String, String] = new mutable.HashMap[String, mutable.Set[String]] with mutable.MultiMap[String, String]
 
-  private var basePath: String = _
+  /**
+   *
+   * the basePath of this endpoint. e.g. the leading part of the url, via which the client connects to the server.
+   *
+   */
+  var basePath: String = _
 
-  private var queryEvaluator: QueryEvaluator = new QueryEvaluator()
+  /**
+   * Queries are evaluated via the Java Scripting API Javascript implementation
+   */
+  val queryEvaluator: QueryEvaluator = new QueryEvaluator()
 
-  private var disconnectEvents: List[StateChangeEvent] = new util.ArrayList[StateChangeEvent]()
+  /**
+   * Disconnect Events are fired when the client connected to this endpoint is disconnecting
+   */
+  val disconnectEvents: List[StateChangeEvent] = new util.ArrayList[StateChangeEvent]()
 
   @BooleanBeanProperty
   var open: Boolean = true
 
-  private var rpc: Rpc = new Rpc()
-
-  this.rpc.register(this)
-
+  /**
+   * This method is called internally from the disruptor for processing an event
+   * @param event
+   */
   override def distribute(event: StateChangeEvent) {
+    // is the client still connected?
     if (open) {
+      // events are simply distributed to the endpoint if a listener is attached
       if (event.getType == StateChangeEventType.EVENT) {
         var jsonObject: JsonObject = null
         val `object` = event.getField(StateChangeEvent.PAYLOAD)
@@ -77,15 +96,20 @@ class Endpoint(private var yagniSocket: OutboundSocket, private var persistence:
           distributeEvent(event.extractNodePath(), node)
         }
       } else {
+        // Data Changes are first evaluated against a query for continuous queries
         processQuery(event)
-        val changeLog = event.getChangeLog
-        distributeChangeLog(changeLog)
+        // afterwards the changelog is distributed
+        distributeChangeLog(event.getChangeLog.getLog)
       }
     }
   }
 
-  def distributeChangeLog(changeLog: ChangeLog) {
-    for (logE <- changeLog.getLog) {
+  /**
+   * This method iterates the given log and distributes the log entries depending of registered
+   * @param log
+   */
+  def distributeChangeLog(log: List[ChangeLogEvent]) {
+    for (logE <- log) {
       if (logE.isInstanceOf[ChildAddedLogEvent]) {
         val logEvent = logE.asInstanceOf[ChildAddedLogEvent]
         if (hasListener(logEvent.getPath, CHILD_ADDED)) {
@@ -115,19 +139,19 @@ class Endpoint(private var yagniSocket: OutboundSocket, private var persistence:
     }
   }
 
-  private def processQuery(event: StateChangeEvent) {
+  def processQuery(event: StateChangeEvent) {
     var nodePath = event.extractNodePath()
     if (!(persistence.get(nodePath).isInstanceOf[JsonObject])) {
       nodePath = nodePath.getParent
     }
     if (hasQuery(nodePath.getParent)) {
-      val queries:mutable.MultiMap[String, String] = queryEvaluator.getQueries
-      for(key <- queries.keySet) {
+      val queries: mutable.MultiMap[String, String] = queryEvaluator.getQueries
+      for (key <- queries.keySet) {
         val queryStrs = queries.get(key).get
-        for( queryStr <- queryStrs) {
+        for (queryStr <- queryStrs) {
           if (event.getPayload != null) {
-            val nodeValue = persistence.getNode(nodePath)
-            val parent = persistence.getNode(nodePath.getParent)
+            val nodeValue = persistence.getJsonObject(nodePath)
+            val parent = persistence.getJsonObject(nodePath.getParent)
             val matches = queryEvaluator.evaluateQueryOnValue(nodeValue, queryStr)
             val containsNode = queryEvaluator.queryContainsNode(new Path(key), queryStr, nodePath)
             if (matches) {
@@ -161,10 +185,10 @@ class Endpoint(private var yagniSocket: OutboundSocket, private var persistence:
     broadcast.putValue("name", name)
     broadcast.putValue(StateChangeEvent.PATH, createPath(path))
     broadcast.putValue("parent", createPath(parent))
-    broadcast.putValue(StateChangeEvent.PAYLOAD, checkPayload(path, node))
+    broadcast.putValue(StateChangeEvent.PAYLOAD, node)
     broadcast.putBoolean("hasChildren", hasChildren)
     broadcast.putNumber("numChildren", numChildren)
-    yagniSocket.send(broadcast.toString)
+    socket.writeTextFrame(broadcast.toString)
   }
 
   def fireChildChanged(name: String,
@@ -179,10 +203,10 @@ class Endpoint(private var yagniSocket: OutboundSocket, private var persistence:
       broadcast.putValue("name", name)
       broadcast.putValue(StateChangeEvent.PATH, createPath(path))
       broadcast.putValue("parent", createPath(parent))
-      broadcast.putValue(StateChangeEvent.PAYLOAD, checkPayload(path, node))
+      broadcast.putValue(StateChangeEvent.PAYLOAD, node)
       broadcast.putBoolean("hasChildren", hasChildren)
       broadcast.putNumber("numChildren", numChildren)
-      yagniSocket.send(broadcast.toString)
+      socket.writeTextFrame(broadcast.toString)
     }
   }
 
@@ -191,8 +215,8 @@ class Endpoint(private var yagniSocket: OutboundSocket, private var persistence:
     broadcast.putValue(StateChangeEvent.TYPE, CHILD_REMOVED)
     broadcast.putValue(StateChangeEvent.NAME, name)
     broadcast.putValue(StateChangeEvent.PATH, createPath(path))
-    broadcast.putValue(StateChangeEvent.PAYLOAD, checkPayload(path, payload))
-    yagniSocket.send(broadcast.toString)
+    broadcast.putValue(StateChangeEvent.PAYLOAD, payload)
+    socket.writeTextFrame(broadcast.toString)
   }
 
   def fireValue(name: String,
@@ -204,8 +228,8 @@ class Endpoint(private var yagniSocket: OutboundSocket, private var persistence:
     broadcast.putValue("name", name)
     broadcast.putValue(StateChangeEvent.PATH, createPath(path))
     broadcast.putValue("parent", createPath(parent))
-    broadcast.putValue(StateChangeEvent.PAYLOAD, checkPayload(path, value))
-    yagniSocket.send(broadcast.toString)
+    broadcast.putValue(StateChangeEvent.PAYLOAD, value)
+    socket.writeTextFrame(broadcast.toString)
   }
 
   def fireQueryChildAdded(path: Path, parent: JsonObject, value: AnyRef) {
@@ -214,8 +238,8 @@ class Endpoint(private var yagniSocket: OutboundSocket, private var persistence:
     broadcast.putValue("name", path.getLastElement)
     broadcast.putValue(StateChangeEvent.PATH, createPath(path.getParent))
     broadcast.putValue("parent", createPath(path.getParent.getParent))
-    broadcast.putValue(StateChangeEvent.PAYLOAD, checkPayload(path, value))
-    yagniSocket.send(broadcast.toString)
+    broadcast.putValue(StateChangeEvent.PAYLOAD, value)
+    socket.writeTextFrame(broadcast.toString)
   }
 
   def fireQueryChildChanged(path: Path, parent: JsonObject, value: AnyRef) {
@@ -225,8 +249,8 @@ class Endpoint(private var yagniSocket: OutboundSocket, private var persistence:
       broadcast.putValue("name", path.getLastElement)
       broadcast.putValue(StateChangeEvent.PATH, createPath(path.getParent))
       broadcast.putValue("parent", createPath(path.getParent.getParent))
-      broadcast.putValue(StateChangeEvent.PAYLOAD, checkPayload(path, value))
-      yagniSocket.send(broadcast.toString)
+      broadcast.putValue(StateChangeEvent.PAYLOAD, value)
+      socket.writeTextFrame(broadcast.toString)
     }
   }
 
@@ -235,8 +259,8 @@ class Endpoint(private var yagniSocket: OutboundSocket, private var persistence:
     broadcast.putValue(StateChangeEvent.TYPE, QUERY_CHILD_REMOVED)
     broadcast.putValue(StateChangeEvent.NAME, path.getLastElement)
     broadcast.putValue(StateChangeEvent.PATH, createPath(path.getParent))
-    broadcast.putValue(StateChangeEvent.PAYLOAD, checkPayload(path, payload))
-    yagniSocket.send(broadcast.toString)
+    broadcast.putValue(StateChangeEvent.PAYLOAD, payload)
+    socket.writeTextFrame(broadcast.toString)
   }
 
   override def distributeEvent(path: Path, payload: JsonObject) {
@@ -249,25 +273,19 @@ class Endpoint(private var yagniSocket: OutboundSocket, private var persistence:
         path +
         "') : " +
         broadcast.toString)
-      yagniSocket.send(broadcast.toString)
+      socket.writeTextFrame(broadcast.toString)
     }
   }
 
-  private def checkPayload(path: Path, value: AnyRef): AnyRef = {
-    if (value.isInstanceOf[JsonObject]) {
-      val org = value.asInstanceOf[JsonObject]
-      val node = new JsonObject()
-      for (key <- org.getFieldNames) {
-        node.putValue(key, checkPayload(path.append(key), org.getField(key)))
-      }
-      node
-    } else {
-      value
-    }
-  }
-
-  private def createPath(path: String): String = {
-    var workPath = path
+  /**
+   *
+   * transforms a given Path into a complete Url of the resource addressed by the path
+   *
+   * @param path
+   * @return
+   */
+  def createPath(path: Path): String = {
+    var workPath = path.toString()
     if (workPath.startsWith("/api/1")) {
       workPath = workPath.substring(6)
     } else if (workPath.startsWith("api/1")) {
@@ -280,48 +298,13 @@ class Endpoint(private var yagniSocket: OutboundSocket, private var persistence:
     }
   }
 
-  private def createPath(path: Path): String = createPath(path.toString)
+  // RPC Helper
+  val rpc: Rpc = new Rpc()
+  rpc.register(this)
 
-  def addListener(path: Path, listenerType: String) {
-    attached_listeners.addBinding(path.toString, listenerType)
-  }
-
-  def removeListener(path: Path, listenerType: String) {
-    attached_listeners.removeBinding(path.toString, listenerType)
-  }
-
-  private def hasListener(path: Path, `type`: String): Boolean = {
-    attached_listeners.entryExists("/", _ == `type`)
-    if (path.isEmtpy) {
-      attached_listeners.containsKey("/") && attached_listeners.entryExists("/", _ == `type`)
-    } else {
-      attached_listeners.containsKey(path.toString) &&
-        attached_listeners.entryExists(path.toString, _ == `type`)
-    }
-  }
-
-  def addQuery(path: Path, query: String) {
-    queryEvaluator.addQuery(path, query)
-  }
-
-  def removeQuery(path: Path, query: String) {
-    queryEvaluator.removeQuery(path, query)
-  }
-
-  def hasQuery(path: Path): Boolean = queryEvaluator.hasQuery(path)
-
-  def registerDisconnectEvent(stateChangeEvent: StateChangeEvent) {
-    disconnectEvents.add(stateChangeEvent.copy())
-  }
-
-  def executeDisconnectEvents() {
-    for (event <- disconnectEvents) {
-      yagni.handle(event)
-    }
-  }
-
-  override def send(msg: String) {
-    yagniSocket.send(msg)
+  // Handle the given Message as a RPC Call
+  def handle(msg: String) {
+    rpc.handle(msg, socket);
   }
 
   @Method
@@ -336,7 +319,7 @@ class Endpoint(private var yagniSocket: OutboundSocket, private var persistence:
   @Method
   def attachListener(@Param("path") path: String, @Param("event_type") eventType: String) {
     LOGGER.trace("attachListener")
-    addListener(new Path(StateChangeEvent.extractPath(path)), eventType)
+    attached_listeners.addBinding(new Path(StateChangeEvent.extractPath(path)).toString(), eventType)
     if ("child_added" == eventType) {
       this.persistence.syncPath(new Path(StateChangeEvent.extractPath(path)), this)
     } else if ("value" == eventType) {
@@ -347,13 +330,23 @@ class Endpoint(private var yagniSocket: OutboundSocket, private var persistence:
   @Method
   def detachListener(@Param("path") path: String, @Param("event_type") eventType: String) {
     LOGGER.trace("detachListener")
-    removeListener(new Path(StateChangeEvent.extractPath(path)), eventType)
+    attached_listeners.removeBinding(new Path(StateChangeEvent.extractPath(path)).toString(), eventType)
+  }
+
+  def hasListener(path: Path, `type`: String): Boolean = {
+    attached_listeners.entryExists("/", _ == `type`)
+    if (path.isEmtpy) {
+      attached_listeners.containsKey("/") && attached_listeners.entryExists("/", _ == `type`)
+    } else {
+      attached_listeners.containsKey(path.toString) &&
+        attached_listeners.entryExists(path.toString, _ == `type`)
+    }
   }
 
   @Method
   def attachQuery(@Param("path") path: String, @Param("query") query: String) {
     LOGGER.trace("attachQuery")
-    addQuery(new Path(StateChangeEvent.extractPath(path)), query)
+    queryEvaluator.addQuery(new Path(StateChangeEvent.extractPath(path)), query)
     this.persistence.syncPathWithQuery(new Path(StateChangeEvent.extractPath(path)), this, new QueryEvaluator(),
       query)
   }
@@ -361,34 +354,36 @@ class Endpoint(private var yagniSocket: OutboundSocket, private var persistence:
   @Method
   def detachQuery(@Param("path") path: String, @Param("query") query: String) {
     LOGGER.trace("detachQuery")
-    removeQuery(new Path(StateChangeEvent.extractPath(path)), query)
+    queryEvaluator.removeQuery(new Path(StateChangeEvent.extractPath(path)), query)
   }
+
+  def hasQuery(path: Path): Boolean = queryEvaluator.hasQuery(path)
 
   @Method
   def event(@Param("path") path: String, @Param("data") data: JsonObject) {
     LOGGER.trace("event")
-    this.yagni.getDistributor().distribute(path, data)
+    this.server.getDistributor().distribute(path, data)
   }
 
   @Method
   def push(@Param("path") path: String, @Param("name") name: String, @Param("data") data: JsonObject) {
     LOGGER.trace("push")
     val event = new StateChangeEvent(StateChangeEventType.PUSH, path + "/" + name, data)
-    this.yagni.handle(event)
+    this.server.handle(event)
   }
 
   @Method
   def set(@Param("path") path: String, @Param("data") data: AnyRef) {
     LOGGER.trace("set")
     val event = new StateChangeEvent(StateChangeEventType.SET, path, data)
-    this.yagni.handle(event)
+    this.server.handle(event)
   }
 
   @Method
   def update(@Param("path") path: String, @Param("data") data: JsonObject) {
     LOGGER.trace("update")
     val event = new StateChangeEvent(StateChangeEventType.UPDATE, path, data)
-    this.yagni.handle(event)
+    this.server.handle(event)
   }
 
   @Method
@@ -419,15 +414,9 @@ class Endpoint(private var yagniSocket: OutboundSocket, private var persistence:
     this.disconnectEvents.add(event)
   }
 
-  def handle(msg: String) {
-    rpc.handle(msg, this);
-  }
-
-  def childCount(node: AnyRef): Long = {
-    if ((node.isInstanceOf[JsonObject])) node.asInstanceOf[JsonObject].getFieldNames().size else 0
-  }
-
-  def hasChildren(node: AnyRef): Boolean = {
-    if ((node.isInstanceOf[JsonObject])) !node.asInstanceOf[JsonObject].getFieldNames().isEmpty else false
+  def executeDisconnectEvents() {
+    for (event <- disconnectEvents) {
+      server.handle(event)
+    }
   }
 }

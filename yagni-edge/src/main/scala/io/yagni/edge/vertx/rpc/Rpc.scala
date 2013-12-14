@@ -1,12 +1,12 @@
 package io.yagni.edge.vertx.rpc
 
-import io.yagni.edge.vertx.messaging.OutboundSocket
 import scala.collection.mutable
 import org.vertx.java.core.json.JsonObject
+import org.vertx.java.core.http.ServerWebSocket
 
 class Rpc {
 
-  private var methods: mutable.Map[String, RpcMethodInstance] = new mutable.HashMap[String, RpcMethodInstance]()
+  val methods: mutable.Map[String, RpcMethodInstance] = new mutable.HashMap[String, RpcMethodInstance]()
 
   def register(obj: AnyRef) {
     try {
@@ -18,7 +18,7 @@ class Rpc {
     }
   }
 
-  def handle(message: String, socket: OutboundSocket) {
+  def handle(message: String, socket: ServerWebSocket) {
     val json = new JsonObject()
     io.yagni.edge.vertx.json.Node.populate(json, message)
     val id = json.getString("id")
@@ -40,14 +40,14 @@ class Rpc {
           response.putValue("type", "rpc")
         }
       }
-      socket.send(response.toString)
+      socket.writeTextFrame(response.toString)
     } else {
       val response = new JsonObject()
       response.putValue("id", id)
       response.putValue("type", "rpc")
       response.putValue("state", "error")
       response.putValue("resp", method + " not found")
-      socket.send(response.toString)
+      socket.writeTextFrame(response.toString)
     }
   }
 }

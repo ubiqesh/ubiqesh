@@ -15,8 +15,6 @@ object StateChangeEventType extends Enumeration {
 
   val UPDATE = new StateChangeEventType()
 
-  val SETPRIORITY = new StateChangeEventType()
-
   val EVENT = new StateChangeEventType()
 
   class StateChangeEventType extends Val

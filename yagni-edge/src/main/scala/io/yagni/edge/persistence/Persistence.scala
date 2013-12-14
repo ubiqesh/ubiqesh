@@ -2,36 +2,68 @@ package io.yagni.edge.persistence
 
 import io.yagni.edge.common.Path
 import io.yagni.edge.vertx.event.changelog.ChangeLog
-import io.yagni.edge.vertx.json.Node
 import io.yagni.edge.vertx.messaging.Endpoint
 import io.yagni.edge.persistence.queries.QueryEvaluator
 import org.vertx.java.core.json.JsonObject
 
-//remove if not needed
-
-
+/**
+ *
+ * Interface for the state persistence.
+ *
+ */
 trait Persistence {
-
+  /**
+   * returns the value at the given Path.
+   * @param path
+   * @return
+   */
   def get(path: Path): AnyRef
 
-  def getNode(path: Path): JsonObject
+  /**
+   * gets the JsonObject at the given Path. If the value at the path is not a JsonObject, the parent JsonObject will be returned.
+   * @param path
+   * @return
+   */
+  def getJsonObject(path: Path): JsonObject
 
-  def remove(log: ChangeLog, path: Path): Unit
+  /**
+   * removes the value at the given Location.
+   * As a side effect the given ChangeLog is filled with the changes happening to the data model.
+   * @param log
+   * @param path
+   */
+  def remove(log: ChangeLog, path: Path)
 
+  /**
+   * Override the data at the path with the given data.
+   *
+   * As a side effect the given ChangeLog is filled with the changes happening to the data model.
+   * @param log
+   * @param path
+   * @param data
+   */
   def applyNewValue(log: ChangeLog,
                     path: Path,
-                    payload: AnyRef): Unit
+                    data: AnyRef)
 
+  /**
+   * Updates the data at the path with the given data. If the handed Data is a JsonObject, the JsonObjects are merged.
+   *
+   * As a side effect the given ChangeLog is filled with the changes happening to the data model.
+   * @param log
+   * @param path
+   * @param data
+   */
   def updateValue(log: ChangeLog,
                   path: Path,
-                  payload: AnyRef): Unit
+                  data: AnyRef)
 
-  def syncPath(path: Path, handler: Endpoint): Unit
+  def syncPath(path: Path, handler: Endpoint)
 
-  def syncPropertyValue(path: Path, yagniEventHandler: Endpoint): Unit
+  def syncPropertyValue(path: Path, endpoint: Endpoint)
 
   def syncPathWithQuery(path: Path,
-                        handler: Endpoint,
+                        endpoint: Endpoint,
                         queryEvaluator: QueryEvaluator,
                         query: String): Unit
 }
