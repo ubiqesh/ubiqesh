@@ -13,3 +13,6 @@ Please have a look at the [Wiki](https://github.com/yagni/yagni/wiki/Documentati
 
 Integration via travis-ci https://travis-ci.org/yagni/yagni
 [![Build Status](https://travis-ci.org/yagni/yagni.png?branch=master)](https://travis-ci.org/yagni/yagni)
+
+Task Planning Board via huboard.com
+https://huboard.com/yagni/yagni
