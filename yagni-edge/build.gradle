@@ -24,6 +24,12 @@ jar {
     }
 }
 
+applicationDistribution.from(jar) {
+    into(project.name) {
+        from 'pkg/conf/*'
+        include '/*'
+    }
+}
 pkg {
     name = "yagni-edge"
     description = "yagni-edge app"
