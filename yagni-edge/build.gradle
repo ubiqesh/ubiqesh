@@ -11,6 +11,7 @@ mainClassName = "io.yagni.edge.vertx.YagniEdgeServer"
 
 dependencies {
     compile 'org.scala-lang:scala-library:2.10.3'
+    compile 'org.scala-lang:scala-compiler:2.10.3'
     compile 'com.lmax:disruptor:3.2.0'
     compile 'joda-time:joda-time:2.2'
     compile 'io.vertx:vertx-platform:2.0.0-final'

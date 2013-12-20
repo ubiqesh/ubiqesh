@@ -1,14 +1,12 @@
 package io.yagni.central
 
-import spray.json.DefaultJsonProtocol
-
 case class Device(id: String, name: String)
 
-object JsonImplicits extends DefaultJsonProtocol {
-  implicit val impDevice = jsonFormat2(Device)
-}
-
 class DeviceController {
+  def find(): List[Device] = {
+    List[Device](new Device("id", "test"),new Device("id", "test"),new Device("id", "test"))
+  }
+
   def get(id: String): Device = {
     new Device("id", "test")
   }

@@ -6,6 +6,7 @@ import spray.http._
 import MediaTypes._
 import scala.concurrent._
 import ExecutionContext.Implicits.global
+import spray.json.DefaultJsonProtocol
 
 
 // we don't implement our route structure directly in the service actor because
@@ -22,47 +23,34 @@ class MyServiceActor extends Actor with MyService {
   def receive = runRoute(myRoute)
 }
 
+object JsonImplicits extends DefaultJsonProtocol {
+  implicit val impDevice = jsonFormat2(Device)
+}
 
 // this trait defines our service behavior independently from the service actor
 trait MyService extends HttpService {
   val deviceController = new DeviceController
   val myRoute = {
-    path("api") {
-      get {
-        respondWithMediaType(`application/json`) {
-          complete {
-            Future[Device] {
-              deviceController.get(null)
-            }
-          }
-        }
-      } ~
-        path("1") {
+    import spray.httpx.SprayJsonSupport.sprayJsonMarshaller
+    import spray.httpx.SprayJsonSupport.sprayJsonUnmarshaller
+    import JsonImplicits._
+    pathPrefix("api") {
+      pathPrefix("1"){
+        get {
           path("devices") {
-            get {
-              respondWithMediaType(`application/json`) {
-                complete {
-                  Future[Device] {
-                    deviceController.get(null)
-                  }
-                }
-              }
+            complete {
+              deviceController.find()
             }
           }
         } ~
         path("devices" / JavaUUID) {
           id => {
-            get {
-              respondWithMediaType(`application/json`) {
-                complete {
-                  Future[Device] {
-                    deviceController.get(id.toString)
-                  }
-                }
-              }
+            complete {
+              deviceController.get(id.toString)
             }
           }
         }
       }
     }
+  }
 }
