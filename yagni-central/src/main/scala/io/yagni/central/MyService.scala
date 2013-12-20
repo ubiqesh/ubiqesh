@@ -6,7 +6,8 @@ import spray.http._
 import MediaTypes._
 import scala.concurrent._
 import ExecutionContext.Implicits.global
-import spray.json.DefaultJsonProtocol
+import spray.json.{DeserializationException, JsString, DefaultJsonProtocol}
+import java.util.UUID
 
 
 // we don't implement our route structure directly in the service actor because
@@ -25,6 +26,7 @@ class MyServiceActor extends Actor with MyService {
 
 object JsonImplicits extends DefaultJsonProtocol {
   implicit val impDevice = jsonFormat2(Device)
+  implicit val impResponseDevice = jsonFormat3(ResponseDevice)
 }
 
 // this trait defines our service behavior independently from the service actor
@@ -36,17 +38,25 @@ trait MyService extends HttpService {
     import JsonImplicits._
     pathPrefix("api") {
       pathPrefix("1"){
-        get {
           path("devices") {
-            complete {
-              deviceController.find()
+            get {
+              complete {
+                deviceController.find()
+              }
+            } ~
+            post {
+              entity(as[Device]) { device =>
+                val result = deviceController.add(device)
+                complete(result)
+              }
             }
-          }
-        } ~
-        path("devices" / JavaUUID) {
-          id => {
-            complete {
-              deviceController.get(id.toString)
+          } ~
+          path("devices" / JavaUUID) {
+            id => {
+              get {
+                complete {
+                  deviceController.get(id)
+              }
             }
           }
         }
