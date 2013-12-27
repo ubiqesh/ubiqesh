@@ -1,1 +1,1 @@
-include 'yagni-protocol', 'yagni-api', 'yagni-central', 'yagni-edge'
+include 'ubiqesh-protocol', 'ubiqesh-api', 'ubiqesh-central', 'ubiqesh-edge'
