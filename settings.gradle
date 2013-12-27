@@ -1,1 +1,1 @@
-include 'ubiqesh-protocol', 'ubiqesh-api', 'ubiqesh-central', 'ubiqesh-edge'
+include 'protocol', 'api', 'central', 'uplink'
