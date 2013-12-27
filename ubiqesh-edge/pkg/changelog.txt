@@ -1,0 +1,4 @@
+release date=15:00 03.14.2013,version=1.0.0
+ * first stable release
+release date=14:00 03.01.2013,version=0.0.1
+ * initial release

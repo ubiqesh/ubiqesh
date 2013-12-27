@@ -1,0 +1,13 @@
+apply plugin: 'java'
+sourceSets {
+    main {
+        java {
+            srcDirs = ['java/src']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['java/test']
+        }
+    }
+}

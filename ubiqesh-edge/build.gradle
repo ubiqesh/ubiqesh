@@ -1,0 +1,76 @@
+apply plugin: 'scala'
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'pkg4j'
+
+group = 'ubiqesh'
+version = '1.0'
+
+sourceCompatibility = 1.7
+mainClassName = "io.ubiqesh.edge.vertx.UbiqeshEdgeServer"
+
+dependencies {
+    compile 'org.scala-lang:scala-library:2.10.3'
+    compile 'org.scala-lang:scala-compiler:2.10.3'
+    compile 'com.lmax:disruptor:3.2.0'
+    compile 'joda-time:joda-time:2.2'
+    compile 'io.vertx:vertx-platform:2.0.0-final'
+    compile 'commons-cli:commons-cli:1.2'
+    compile 'io.spray:spray-json_2.10:1.2.5'
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Ubiqesh Edge', 'Implementation-Version': 1.0
+    }
+}
+
+applicationDistribution.from(jar) {
+    into(project.name) {
+        from 'pkg/conf/*'
+        include '/*'
+    }
+}
+pkg {
+    name = "ubiqesh-edge"
+    description = "ubiqesh-edge app"
+    changes = "pkg/changelog.txt"
+    author = "Christoph Grotz <christoph.grotz@gmail.com>"
+
+    dirs {
+        create "/var/cache/ubiqesh-edge", owner: "ubiqesh-edge"
+        pack dir: "pkg/etc", prefix: "/etc", mode: "775"
+        pack dir: "build/install/ubiqesh-edge", prefix: "/usr/ubiqesh-edge"
+    }
+
+    depends {
+        on "openjdk-7-jre | default-jre"
+    }
+
+    preinst {
+        exec "adduser --system --group --home /var/lib/ubiqesh-edge ubiqesh-edge --quiet --gecos \"ubiqesh-edge daemon\""
+    }
+    postinst { exec "update-rc.d ubiqesh-edge defaults 90 20" }
+    prerm { exec "update-rc.d -f ubiqesh-edge remove" }
+}
+
+buildDeb.dependsOn installApp
+
+// Pull the plugin from Maven Central
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jamel.pkg4j:pkg4j-gradle:0.0.6-SNAPSHOT"
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url "http://repo.spray.io/"
+    }
+}
