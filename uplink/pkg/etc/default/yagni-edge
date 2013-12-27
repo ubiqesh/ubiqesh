@@ -1,18 +1,18 @@
-# Defaults for ubiqesh-edge initscript
-# sourced by /etc/init.d/ubiqesh-edge
-# installed at /etc/default/ubiqesh-edge by the maintainer scripts
+# Defaults for ubiqesh-uplink initscript
+# sourced by /etc/init.d/ubiqesh-uplink
+# installed at /etc/default/ubiqesh-uplink by the maintainer scripts
 
 #
 # This is a POSIX shell fragment
 #
 
 # Run Tomcat as this user ID. Not setting this or leaving it blank will use the
-# default of ubiqesh-edge.
-# PACKAGENAME_USER=ubiqesh-edge
+# default of ubiqesh-uplink.
+# PACKAGENAME_USER=ubiqesh-uplink
 
 # Run Tomcat as this group ID. Not setting this or leaving it blank will use
 # the default of packagename.
-# PACKAGENAME_GROUP=ubiqesh-edge
+# PACKAGENAME_GROUP=ubiqesh-uplink
 
 # The home directory of the Java development kit (JDK). You need at least
 # JDK version 1.5. If JAVA_HOME is not set, some common directories for
@@ -39,14 +39,14 @@ JAVA_OPTS="-Djava.awt.headless=true -XX:+UseConcMarkSweepGC"
 # Use the Java security manager? (yes/no, default: no)
 #PACKAGENAME_SECURITY=no
 
-# Number of days to keep logfiles in /var/log/ubiqesh-edge. Default is 14 days.
+# Number of days to keep logfiles in /var/log/ubiqesh-uplink. Default is 14 days.
 #LOGFILE_DAYS=14
 # Whether to compress logfiles older than today's
 #LOGFILE_COMPRESS=1
 
 # Location of the JVM temporary directory
 # WARNING: This directory will be destroyed and recreated at every startup !
-#JVM_TMP=/tmp/ubiqesh-edge-temp
+#JVM_TMP=/tmp/ubiqesh-uplink-temp
 
 # If you run Tomcat on port numbers that are all higher than 1023, then you
 # do not need authbind.  It is used for binding Tomcat to lower port numbers.

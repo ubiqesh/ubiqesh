@@ -1,4 +1,4 @@
-ubiqesh-edge
+ubiqesh-uplink
 ==========
 
-UBIQESH Edge Controller
+UBIQESH Uplink Controller

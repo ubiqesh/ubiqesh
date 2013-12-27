@@ -7,7 +7,7 @@ group = 'ubiqesh'
 version = '1.0'
 
 sourceCompatibility = 1.7
-mainClassName = "io.ubiqesh.edge.vertx.UbiqeshEdgeServer"
+mainClassName = "io.ubiqesh.uplink.vertx.UplinkServer"
 
 dependencies {
     compile 'org.scala-lang:scala-library:2.10.3'
@@ -21,7 +21,7 @@ dependencies {
 
 jar {
     manifest {
-        attributes 'Implementation-Title': 'Ubiqesh Edge', 'Implementation-Version': 1.0
+        attributes 'Implementation-Title': 'Ubiqesh Uplink', 'Implementation-Version': 1.0
     }
 }
 
@@ -32,15 +32,15 @@ applicationDistribution.from(jar) {
     }
 }
 pkg {
-    name = "ubiqesh-edge"
-    description = "ubiqesh-edge app"
+    name = "ubiqesh-uplink"
+    description = "ubiqesh-uplink app"
     changes = "pkg/changelog.txt"
     author = "Christoph Grotz <christoph.grotz@gmail.com>"
 
     dirs {
-        create "/var/cache/ubiqesh-edge", owner: "ubiqesh-edge"
+        create "/var/cache/ubiqesh-uplink", owner: "ubiqesh-uplink"
         pack dir: "pkg/etc", prefix: "/etc", mode: "775"
-        pack dir: "build/install/ubiqesh-edge", prefix: "/usr/ubiqesh-edge"
+        pack dir: "build/install/ubiqesh-uplink", prefix: "/usr/ubiqesh-uplink"
     }
 
     depends {
@@ -48,10 +48,10 @@ pkg {
     }
 
     preinst {
-        exec "adduser --system --group --home /var/lib/ubiqesh-edge ubiqesh-edge --quiet --gecos \"ubiqesh-edge daemon\""
+        exec "adduser --system --group --home /var/lib/ubiqesh-uplink ubiqesh-uplink --quiet --gecos \"ubiqesh-uplink daemon\""
     }
-    postinst { exec "update-rc.d ubiqesh-edge defaults 90 20" }
-    prerm { exec "update-rc.d -f ubiqesh-edge remove" }
+    postinst { exec "update-rc.d ubiqesh-uplink defaults 90 20" }
+    prerm { exec "update-rc.d -f ubiqesh-uplink remove" }
 }
 
 buildDeb.dependsOn installApp

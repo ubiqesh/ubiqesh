@@ -1,34 +1,34 @@
 #!/bin/bash
 #
-# ubiqesh-edge     This shell script takes care of starting and stopping Tomcat
+# ubiqesh-uplink     This shell script takes care of starting and stopping Tomcat
 #
 # chkconfig: - 80 20
 #
 ### BEGIN INIT INFO
-# Provides: ubiqesh-edge
+# Provides: ubiqesh-uplink
 # Required-Start: $network $syslog
 # Required-Stop: $network $syslog
 # Default-Start:
 # Default-Stop:
-# Description: ubiqesh-edge
-# Short-Description: start and stop ubiqesh-edge
+# Description: ubiqesh-uplink
+# Short-Description: start and stop ubiqesh-uplink
 ### END INIT INFO
  
 tomcat_pid() {
-  echo `ps aux | grep io.ubiqesh.edge.vertx.UbiqeshEdgeServer | grep -v grep | awk '{ print $2 }'`
+  echo `ps aux | grep io.ubiqesh.uplink.vertx.UbiqeshUplinkServer | grep -v grep | awk '{ print $2 }'`
 }
  
 start() {
   pid=$(tomcat_pid)
   if [ -n "$pid" ] 
   then
-    echo "ubiqesh-edge is already running (pid: $pid)"
+    echo "ubiqesh-uplink is already running (pid: $pid)"
   else
-    # Start ubiqesh-edge
-    echo "Starting ubiqesh-edge"
+    # Start ubiqesh-uplink
+    echo "Starting ubiqesh-uplink"
     ulimit -n 100000
     umask 007
-    /bin/su -p -s /bin/bash ubiqesh-edge /usr/ubiqesh-edge/bin/ubiqesh-edge &
+    /bin/su -p -s /bin/bash ubiqesh-uplink /usr/ubiqesh-uplink/bin/ubiqesh-uplink &
   fi
  
   return 0
@@ -38,10 +38,10 @@ stop() {
   pid=$(tomcat_pid)
   if [ -n "$pid" ]
   then
-    echo "Stoping ubiqesh-edge"
+    echo "Stoping ubiqesh-uplink"
     kill -9 $pid
   else
-    echo "ubiqesh-edge is not running"
+    echo "ubiqesh-uplink is not running"
   fi
  
   return 0
@@ -62,9 +62,9 @@ status)
   pid=$(tomcat_pid)
   if [ -n "$pid" ]
   then
-    echo "ubiqesh-edge is running with pid: $pid"
+    echo "ubiqesh-uplink is running with pid: $pid"
   else
-    echo "ubiqesh-edge is not running"
+    echo "ubiqesh-uplink is not running"
   fi
 ;; 
 esac    

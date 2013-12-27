@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="no-js">
+<html class="no-js" ng-app="devices">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=uplink,chrome=1">
@@ -19,7 +19,7 @@
 
     <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 </head>
-<body>
+<body ng-controller="DevicesCtrl">
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -32,9 +32,8 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="/">Home</a></li>
-                <li><a href="devices.html">Devices</a></li>
-                <li class="active"><a href="#">Administration</a></li>
+                <li><a href="index.html">Home</a></li>
+                <li class="active"><a href="#">Devices</a></li>
             </ul>
         </div>
         <!--/.navbar-collapse -->
@@ -44,9 +43,9 @@
 <!-- Main jumbotron for a primary marketing message or call to action -->
 <div class="jumbotron">
     <div class="container">
-        <h1>Administrate your UBIQESH Uplink</h1>
+        <h1>Your devices</h1>
 
-        <p>This is the administration of your UBIQESH platform.</p>
+        <p>On this page you can find your UBIQESH devices.</p>
 
         <p>
             <a class="btn btn-primary btn-lg">Learn more &raquo;</a>
@@ -55,14 +54,34 @@
 </div>
 
 <div class="container">
-
+    <span>{{devices.length}} Devices</span>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Location</th>
+            <th>State</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="device in devices">
+            <td>{{$index}}</td>
+            <td>{{device.name}}</td>
+            <td>{{device.location}}</td>
+            <td>{{device.state}}</td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 <!-- /container -->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
 
 <script src="js/vendor/bootstrap.min.js"></script>
+<script src="js/vendor/angular.min.js"></script>
+<script src="js/angularjs/angular-binding.js"></script>
 
-<script src="js/main.js"></script>
+<script src="js/devices.js"></script>
 </body>
 </html>
