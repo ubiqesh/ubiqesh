@@ -3,23 +3,41 @@ package io.ubiqesh.central
 import org.vertx.scala.core.http.{HttpServerRequest, RouteMatcher}
 
 import akka.actor.{ActorSystem, Props}
-import io.netty.handler.codec.http.HttpHeaders
+import io.netty.handler.codec.http.{QueryStringDecoder, HttpHeaders}
 import org.vertx.java.core.http.impl.MimeMapping
 import java.io.{InputStreamReader, IOException}
 import java.net.URL
 import java.nio.charset.{CodingErrorAction, StandardCharsets}
+import org.vertx.scala.core.buffer.Buffer
+import io.ubiqesh.central.rest.{RestEndpoint, UsersRestEndpoint, SemanticsRestEndpoint, DevicesRestEndpoint}
 
 object Boot extends App {
   implicit val system = ActorSystem("central")
-  val supervisor = system.actorOf(Props[Supervisor], "Supervisor")
+
+  val devicesRestEndpoint = system.actorOf(Props(classOf[DevicesRestEndpoint],"/v1"), "DevicesRestEndpoint")
+  val usersRestEndpoint = system.actorOf(Props(classOf[UsersRestEndpoint],"/v1"), "UsersRestEndpoint")
+  val semanticsRestEndpoint = system.actorOf(Props(classOf[SemanticsRestEndpoint],"/v1"), "SemanticsRestEndpoint")
   val vertx = org.vertx.scala.core.newVertx()
+
   val rm = new RouteMatcher()
-  rm.all("/v1(.)*", {
-    request:HttpServerRequest => {
-      supervisor.tell(request, null)
-    }
-  })
-  rm.all("/(.)*",  {
+  rm.all("/v1(.)*",new RestEndpoint("/v1"))
+  rm.post("/signin", { request:HttpServerRequest => {
+    request.bodyHandler({
+      buffer: Buffer => {
+        val contentType = request.headers().get("Content-Type");
+        if ("application/x-www-form-urlencoded".equals(contentType))
+        {
+          val qsd = new QueryStringDecoder(buffer.toString(), false);
+          val params = qsd.parameters()
+          System.out.println(params);
+        }
+        request.response()
+          .setStatusCode(302)
+          .putHeader("location","/index.html")
+          .end()
+    }})
+  }});
+  rm.get("/(.)*",  {
     request:HttpServerRequest => {
       try {
         var path = request.uri()
@@ -28,6 +46,13 @@ object Boot extends App {
         }
         if (path.startsWith("/")) {
           path = path.substring(1)
+        }
+        if("signin".equals(path))
+        {
+          request.response()
+            .setStatusCode(302)
+            .putHeader("location","/login.html")
+            .end()
         }
 
         var resource = Thread.currentThread().getContextClassLoader.getResource("ui/" + path)
