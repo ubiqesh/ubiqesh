@@ -13,10 +13,6 @@ import io.ubiqesh.central.rest.{RestEndpoint, UsersRestEndpoint, SemanticsRestEn
 
 object Boot extends App {
   implicit val system = ActorSystem("central")
-
-  val devicesRestEndpoint = system.actorOf(Props(classOf[DevicesRestEndpoint],"/v1"), "DevicesRestEndpoint")
-  val usersRestEndpoint = system.actorOf(Props(classOf[UsersRestEndpoint],"/v1"), "UsersRestEndpoint")
-  val semanticsRestEndpoint = system.actorOf(Props(classOf[SemanticsRestEndpoint],"/v1"), "SemanticsRestEndpoint")
   val vertx = org.vertx.scala.core.newVertx()
 
   val rm = new RouteMatcher()
