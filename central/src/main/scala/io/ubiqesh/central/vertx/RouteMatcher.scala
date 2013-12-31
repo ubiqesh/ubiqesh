@@ -1,7 +1,8 @@
-package io.ubiqesh.central
+package io.ubiqesh.central.vertx
 
 import org.vertx.java.core.Handler
 import org.vertx.java.core.http.RouteMatcher
+// Scala is very cool
 import org.vertx.java.core.http.{ RouteMatcher => JRouteMatcher }
 import org.vertx.scala.core.FunctionConverters._
 import org.vertx.scala.Wrap
@@ -11,6 +12,9 @@ import org.vertx.scala.core.http.{HttpServerRequest, RouteMatcher}
 import org.vertx.scala.core.FunctionConverters._
 
 /**
+ * Comment CG: extended noMatch and get, post and all with the possibility of using Handler
+ *
+ *
  * Not sure whether this kind of RouteMatcher should stay in Scala...
  *
  * @author swilliams

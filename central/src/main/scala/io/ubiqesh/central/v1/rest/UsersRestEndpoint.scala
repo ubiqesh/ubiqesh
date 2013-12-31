@@ -3,7 +3,7 @@ package io.ubiqesh.central.rest
 import akka.actor.{Props, ActorSystem, ActorLogging, UntypedActor}
 import org.vertx.scala.core.http.{RouteMatcher, HttpServerRequest}
 
-class UserEndpoint(prefix: String) extends RouteMatcher {
+class UsersEndpoint(prefix: String) extends RouteMatcher {
   implicit val system = ActorSystem("central")
 
   val usersRestEndpoint = system.actorOf(Props(classOf[UsersRestEndpoint],prefix), "UsersRestEndpoint")

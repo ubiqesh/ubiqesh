@@ -1,4 +1,4 @@
-package io.ubiqesh.central
+package io.ubiqesh.central.ui
 
 import org.vertx.java.core.Handler
 import org.vertx.scala.core.http.HttpServerRequest
@@ -6,7 +6,7 @@ import org.vertx.scala.core.buffer.Buffer
 import io.netty.handler.codec.http.QueryStringDecoder
 
 /**
- * Created by balu on 30.12.13.
+ * Created by Christoph Grotz on 30.12.13.
  */
 class AuthenticationHandler extends Handler[HttpServerRequest] {
   def handle(request: HttpServerRequest){

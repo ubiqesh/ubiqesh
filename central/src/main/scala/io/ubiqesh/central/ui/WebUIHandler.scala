@@ -1,12 +1,12 @@
-package io.ubiqesh.central
+package io.ubiqesh.central.ui
 
-import org.vertx.scala.core.http.{HttpServerRequest}
+import org.vertx.scala.core.http.HttpServerRequest
 
-import akka.actor.{ActorSystem}
+import akka.actor.ActorSystem
 import io.netty.handler.codec.http.{HttpHeaders, QueryStringDecoder}
 import org.vertx.scala.core.buffer.Buffer
 import org.vertx.java.core.Handler
-import io.ubiqesh.central.rest.{RestEndpoint}
+import io.ubiqesh.central.rest.RestEndpoint
 import org.vertx.java.core.http.impl.MimeMapping
 import java.net.URL
 import java.nio.charset.{CodingErrorAction, StandardCharsets}
