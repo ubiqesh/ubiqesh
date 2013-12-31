@@ -1,6 +1,11 @@
 package io.ubiqesh.central
 
 import io.ubiqesh.central.rest.RestEndpoint
+import io.ubiqesh.central.ui.{WebUIHandler, AuthenticationHandler}
+import io.ubiqesh.central.vertx.RouteMatcher
+import org.vertx.scala.core.net.{NetSocket, NetServer}
+import org.vertx.scala.core.http.HttpServerRequest
+import io.ubiqesh.central.mqtt.{MqttServer}
 
 object Boot extends App {
   val vertx = org.vertx.scala.core.newVertx()
@@ -14,4 +19,13 @@ object Boot extends App {
   rm.noMatch(new WebUIHandler())
   // Start the HTTP server at port 8080, listening on localhost
   vertx.createHttpServer().requestHandler(rm).listen(8080, "localhost")
+
+  val mqttServer = new MqttServer(vertx)
+  vertx.createNetServer()
+    .setClientAuthRequired(false)
+    .setTCPKeepAlive(true)
+    .setTCPNoDelay(true)
+    .connectHandler({ socket:NetSocket => {
+    mqttServer.registerClient(socket)
+  }}).listen(1883)
 }
