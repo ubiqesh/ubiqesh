@@ -1,14 +1,10 @@
 package io.ubiqesh.central.vertx
 
-import org.vertx.java.core.Handler
-import org.vertx.java.core.http.RouteMatcher
 // Scala is very cool
 import org.vertx.java.core.http.{ RouteMatcher => JRouteMatcher }
-import org.vertx.scala.core.FunctionConverters._
-import org.vertx.scala.Wrap
 import org.vertx.java.core.Handler
 import org.vertx.scala.Wrap
-import org.vertx.scala.core.http.{HttpServerRequest, RouteMatcher}
+import org.vertx.scala.core.http.{HttpServerRequest}
 import org.vertx.scala.core.FunctionConverters._
 
 /**

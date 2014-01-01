@@ -1,4 +1,6 @@
-package io.ubiqesh.central.mqtt
+package io.ubiqesh.central.mqtt.commands
+
+
 /**
  *
  *
@@ -62,22 +64,53 @@ package io.ubiqesh.central.mqtt
  *                 supplying a user
  * @author <a href="http://twitter.com/aloyer">@aloyer</a>
  */
-case class Connect(messageType: CommandType.Value,
-                   DUP: Boolean,
-                   QoS: QosLevel.Value,
-                   retain: Boolean,
-                   remainingLength: Long,
-                   payload: Array[Byte],
-                   protocolName: String,
-                   protocolVersion: Short,
-                   cleanSession: Boolean,
-                   keepAliveInSeconds: Int,
-                   clientId: String,
-                   username: Option[String],
-                   password: Option[String]) extends MqttPacket
+class Connect(override val messageType: CommandType.Value,
+              override val DUP: Boolean,
+              override val QoS: QosLevel.Value,
+              override val retain: Boolean,
+              override val remainingLength: Long,
+              val protocolName: String,
+              val protocolVersion: Short,
+              val cleanSession: Boolean,
+              val keepAliveInSeconds: Int,
+              val clientId: String,
+              val username: Option[String],
+              val password: Option[String]) extends Command(messageType, DUP, QoS,retain, remainingLength)
 
-case class Disconnect(messageType: CommandType.Value,
-                   DUP: Boolean,
-                   QoS: QosLevel.Value,
-                   retain: Boolean,
-                   remainingLength: Long) extends MqttPacket
+/**
+ * MQTT V3.1 Protocol Specification - section 3.2
+ */
+object ConnackCode extends Enumeration {
+  /**
+   * Connection Accepted
+   */
+  val Accepted = Value(0)
+
+  /**
+   * Connection Refused: unacceptable protocol version
+   */
+  val UnacceptableProtocolVersion = Value(1)
+
+  /**
+   * Connection Refused: identifier rejected
+   */
+  val IdentifierRejected = Value(2)
+
+  /**
+   * Connection Refused: server unavailable
+   */
+  val ServerUnavailable = Value(3)
+
+  /**
+   * Connection Refused: bad user name or password
+   */
+  val BadUserOrPassword = Value(4)
+
+  /**
+   * Connection Refused: not authorized
+   */
+  val NotAuthorized = Value(5)
+
+  // 6 - 255
+  // Reserved for future use
+}
