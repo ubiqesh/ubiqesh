@@ -1,17 +1,17 @@
 #!/bin/bash
 #
-# ubiqesh-uplink     This shell script takes care of starting and stopping Tomcat
+# uplink     This shell script takes care of starting and stopping Tomcat
 #
 # chkconfig: - 80 20
 #
 ### BEGIN INIT INFO
-# Provides: ubiqesh-uplink
+# Provides: uplink
 # Required-Start: $network $syslog
 # Required-Stop: $network $syslog
 # Default-Start:
 # Default-Stop:
-# Description: ubiqesh-uplink
-# Short-Description: start and stop ubiqesh-uplink
+# Description: uplink
+# Short-Description: start and stop uplink
 ### END INIT INFO
  
 tomcat_pid() {
@@ -22,13 +22,13 @@ start() {
   pid=$(tomcat_pid)
   if [ -n "$pid" ] 
   then
-    echo "ubiqesh-uplink is already running (pid: $pid)"
+    echo "uplink is already running (pid: $pid)"
   else
-    # Start ubiqesh-uplink
-    echo "Starting ubiqesh-uplink"
+    # Start uplink
+    echo "Starting uplink"
     ulimit -n 100000
     umask 007
-    /bin/su -p -s /bin/bash ubiqesh-uplink /usr/ubiqesh-uplink/bin/ubiqesh-uplink &
+    /bin/su -p -s /bin/bash uplink /usr/uplink/bin/uplink &
   fi
  
   return 0
@@ -38,10 +38,10 @@ stop() {
   pid=$(tomcat_pid)
   if [ -n "$pid" ]
   then
-    echo "Stoping ubiqesh-uplink"
+    echo "Stoping uplink"
     kill -9 $pid
   else
-    echo "ubiqesh-uplink is not running"
+    echo "uplink is not running"
   fi
  
   return 0
@@ -62,9 +62,9 @@ status)
   pid=$(tomcat_pid)
   if [ -n "$pid" ]
   then
-    echo "ubiqesh-uplink is running with pid: $pid"
+    echo "uplink is running with pid: $pid"
   else
-    echo "ubiqesh-uplink is not running"
+    echo "uplink is not running"
   fi
 ;; 
 esac    

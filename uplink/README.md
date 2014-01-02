@@ -1,4 +1,4 @@
-ubiqesh-uplink
+uplink
 ==========
 
 UBIQESH Uplink Controller

@@ -8,6 +8,7 @@ import io.ubiqesh.central.mqtt.decoder.MqttDecoder
 import io.ubiqesh.central.mqtt.encoder.Encoder
 import io.ubiqesh.central.mqtt.commands._
 import scala.collection.mutable
+import io.ubiqesh.central.authentication.AllowAllAuthenticationService
 
 /**
  * Created by balu on 01.01.14.
