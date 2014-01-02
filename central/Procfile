@@ -1,2 +1,2 @@
-web: ./build/install/app/bin/app
+web: ./build/install/central/bin/central
 
