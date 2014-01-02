@@ -1,1 +1,1 @@
-include 'yagni-protocol', 'yagni-api', 'yagni-central', 'yagni-edge'
+include 'protocol', 'api', 'central', 'uplink'

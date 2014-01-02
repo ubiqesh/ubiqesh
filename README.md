@@ -14,6 +14,7 @@ Please have a look at the [Wiki](https://github.com/ubiqesh/ubiqesh/wiki/Documen
 
 Integration via travis-ci https://travis-ci.org/ubiqesh/ubiqesh
 [![Build Status](https://travis-ci.org/ubiqesh/ubiqesh.png?branch=master)](https://travis-ci.org/ubiqesh/ubiqesh)
+=======
 
 Task Planning Board via huboard.com
 https://huboard.com/ubiqesh/ubiqesh
