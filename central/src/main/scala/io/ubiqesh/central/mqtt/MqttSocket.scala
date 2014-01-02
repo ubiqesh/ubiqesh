@@ -18,6 +18,7 @@ class MqttSocket(val client: NetSocket, val server: MqttServer) {
   val stream = Unpooled.buffer()
 
   val topics = new mutable.HashSet[Topic]
+  val pathMatcher = new PathMatcher
   var clientId:Option[String] = None
 
   client.internal.dataHandler(new JHandler[Buffer]{
@@ -62,12 +63,14 @@ class MqttSocket(val client: NetSocket, val server: MqttServer) {
                   server.publishMessage(publish.messageId, publish.topic, publish.payload)
                 }
                 case QosLevel.AtLeastOnce => {
+                  // This strategy basically requires persistence of the messages => How do we want to enable the persistence
                   // TODO Store message
                   // TODO Publish message to subscribers
                   // TODO Delete message
                   // TODO Send PUBACK
                 }
                 case QosLevel.ExactlyOnce => {
+                  // This strategy basically requires persistence of the messages => How do we want to enable the persistence
                   /* TODO Variant 1:
                    * Store message
                    * Send PUBREC
@@ -87,7 +90,7 @@ class MqttSocket(val client: NetSocket, val server: MqttServer) {
                    */
                 }
                 case QosLevel.R3 => {
-                  throw new NotImplementedError()
+                  throw new NotImplementedError("QoS Level R3 not implemented yet")
                 }
               }
             }
@@ -104,7 +107,19 @@ class MqttSocket(val client: NetSocket, val server: MqttServer) {
   })
 
   def publish = (messageId: Option[Int], topic:String, payload: Array[Byte]) => {
-    // TODO check topic
-    client.internal.write(encoder.encodePublish(messageId, topic, payload))
+    if(matchesSubscribedTopics(topic))
+    {
+      client.internal.write(encoder.encodePublish(messageId, topic, payload))
+    }
+  }
+
+  def matchesSubscribedTopics(topic:String): Boolean = {
+    topics.foreach( subscribedTopic => {
+      if(pathMatcher.matchPath(subscribedTopic.pattern, topic))
+      {
+        return true
+      }
+    })
+    return false
   }
 }

@@ -148,3 +148,36 @@ object QosLevel extends Enumeration {
 }
 
 case class Topic(pattern:String, QOS:QosLevel.Value)
+
+class PathMatcher {
+  def matchPath(subscribedTopic:String, topic:String):Boolean = {
+    val subscribedTopicElements = subscribedTopic.split("/")
+    val topicElements = topic.split("/")
+    var i = 0
+    for( currentElement <- subscribedTopicElements ) {
+      currentElement match {
+        case "+" => {
+          return (topicElements.length == i+1)
+        }
+        case "#" => {
+          return (topicElements.length >= i+1)
+        }
+        case _ => {
+          if(topicElements.length > i+1) {
+            if(topicElements(i) != currentElement) {
+              return false
+            }
+          }
+          else if(topicElements.length == i+1) {
+            return (topicElements(i) == currentElement)
+          }
+          else {
+            return false
+          }
+        }
+      }
+      i = i+1
+    }
+    return false
+  }
+}
