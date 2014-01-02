@@ -33,15 +33,15 @@ applicationDistribution.from(jar) {
 }
 pkg {
 
-    name = "ubiqesh-uplink"
-    description = "ubiqesh-uplink app"
+    name = "uplink"
+    description = "uplink app"
     changes = "pkg/changelog.txt"
     author = "Christoph Grotz <christoph.grotz@gmail.com>"
 
     dirs {
-        create "/var/cache/ubiqesh-uplink", owner: "ubiqesh-uplink"
+        create "/var/cache/uplink", owner: "uplink"
         pack dir: "pkg/etc", prefix: "/etc", mode: "775"
-        pack dir: "build/install/ubiqesh-uplink", prefix: "/usr/ubiqesh-uplink"
+        pack dir: "build/install/uplink", prefix: "/usr/uplink"
     }
 
     depends {
@@ -49,10 +49,10 @@ pkg {
     }
 
     preinst {
-        exec "adduser --system --group --home /var/lib/ubiqesh-uplink ubiqesh-uplink --quiet --gecos \"ubiqesh-uplink daemon\""
+        exec "adduser --system --group --home /var/lib/uplink uplink --quiet --gecos \"uplink daemon\""
     }
-    postinst { exec "update-rc.d ubiqesh-uplink defaults 90 20" }
-    prerm { exec "update-rc.d -f ubiqesh-uplink remove" }
+    postinst { exec "update-rc.d uplink defaults 90 20" }
+    prerm { exec "update-rc.d -f uplink remove" }
 }
 buildDeb.dependsOn installApp
 */

@@ -1,6 +1,5 @@
-package io.yagni.central.mqtt.commands
+package io.ubiqesh.central.mqtt.commands
 
-import io.ubiqesh.central.mqtt.commands._
 import org.scalatest._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

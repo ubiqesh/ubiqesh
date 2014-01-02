@@ -1,6 +1,5 @@
 package io.ubiqesh.central.mqtt.commands
 
-
 /**
  * MQTT V3.1 Protocol Specification - section 2.1
  */
