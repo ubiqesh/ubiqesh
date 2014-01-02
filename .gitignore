@@ -1,5 +1,8 @@
 build/
 target/
+classes/
+.gradle
 .idea
 .idea_modules
 *.iml
+rebel.xml
