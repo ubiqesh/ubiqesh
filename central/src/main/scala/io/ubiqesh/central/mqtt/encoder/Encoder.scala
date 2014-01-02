@@ -125,7 +125,7 @@ class Encoder {
     // --------+-----------------------+-----+-----------+------+
     // byte 2  |              Remaining Length                  |
     //---------+------------------------------------------------+
-    // The DUP, QoS and RETAIN flags are not used in the SUBACK message.
+    // The DUP, QoS and RETAIN flags are not used in the PINGRESP message.
     // MQTT V3.1 Protocol Specification - sections 3.9
 
     val header = new Buffer(2)
@@ -139,33 +139,6 @@ class Encoder {
     buffer
   }
 
-  def writePuback(messageId: Int) {
-    //
-    // --------+-----+-----+-----+-----+-----+-----+-----+------+
-    // bit     |  7  |  6  |  5  |  4  |  3  |  2  |  1  |  0   |
-    // --------+-----+-----+-----+-----+-----+-----+-----+------+
-    // byte 1  |  0     1     0     0  |  x  |  x     x  |  x   |
-    // --------+-----------------------+-----+-----------+------+
-    // byte 2  |              Remaining Length                  |
-    //---------+------------------------------------------------+
-    // The DUP, QoS and RETAIN flags are not used in the PUBACK message.
-    // MQTT V3.1 Protocol Specification - sections 3.4
-
-    val buffer = new Buffer(4)
-
-    // byte 1: 0b_0100_0000 = 0x40
-    buffer.appendByte(0x40.asInstanceOf[Byte])
-    // byte 2: remaining length = 2 => 0x02
-    buffer.appendByte(0x02.asInstanceOf[Byte])
-
-    // variable header:
-    // Contains the Message Identifier (Message ID) for the PUBLISH
-    // message that is being acknowledged.
-    buffer.appendShort((messageId & 0xFFFF).asInstanceOf[Short]) // 16-bit unsigned integer
-
-    buffer
-  }
-
   def encodeUnsuback(messageId: Int):Buffer = {
     //
     // --------+-----+-----+-----+-----+-----+-----+-----+------+
@@ -175,7 +148,7 @@ class Encoder {
     // --------+-----------------------+-----+-----------+------+
     // byte 2  |              Remaining Length                  |
     //---------+------------------------------------------------+
-    // The DUP, QoS and RETAIN flags are not used in the PUBREC message.
+    // The DUP, QoS and RETAIN flags are not used in the UNSUBACK message.
     // MQTT V3.1 Protocol Specification - sections 3.5
 
     val buffer = new Buffer(4)
@@ -194,6 +167,17 @@ class Encoder {
   }
 
   def encodePublish(messageId: Option[Int], topic:String, payload: Array[Byte]):Buffer = {
+    //
+    // --------+-----+-----+-----+-----+-----+-----+-----+------+
+    // bit     |  7  |  6  |  5  |  4  |  3  |  2  |  1  |  0   |
+    // --------+-----+-----+-----+-----+-----+-----+-----+------+
+    // byte 1  |  0     1     0     1  |  x  |  x     x  |  x   |
+    // --------+-----------------------+-----+-----------+------+
+    // byte 2  |              Remaining Length                  |
+    //---------+------------------------------------------------+
+    // The DUP, QoS and RETAIN flags are not used in the PUBLISH message.
+    // MQTT V3.1 Protocol Specification - sections 3.5
+
     val content = new Buffer()
 
     content.appendShort((messageId.getOrElse(0) & 0xFFFF).asInstanceOf[Short])

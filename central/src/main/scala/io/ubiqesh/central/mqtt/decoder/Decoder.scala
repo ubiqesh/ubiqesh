@@ -3,6 +3,7 @@ package io.ubiqesh.central.mqtt.decoder
 import io.netty.buffer.ByteBuf
 import java.io.DataInput
 import io.ubiqesh.central.mqtt.commands._
+import io.ubiqesh.central.mqtt.decoder.DefaultDecoder
 
 trait Decoder {
   def decode(startPos:Int, messageType: Int, dupFlag:Boolean, qosLevel: Int, retainFlag:Boolean, length:Int, stream: ByteBuf): Option[Command]
@@ -22,12 +23,10 @@ trait Decoder {
  */
 class MqttDecoder {
   val connectDecoder = new ConnectDecoder
-  val disconnectDecoder = new DisconnectDecoder
   val subscribeDecoder = new SubscribeDecoder
   val unsubscribeDecoder = new UnsubscribeDecoder
   val publishDecoder = new PublishDecoder
-  val pingreqDecoder = new PingreqDecoder
-  val pubrelDecoder = new PubrelDecoder
+  val defaultDecoder = new DefaultDecoder
 
   def decode(stream: ByteBuf): Option[Command] = {
     if(stream.readableBytes() < 2) {
@@ -51,9 +50,6 @@ class MqttDecoder {
         case CommandType.CONNECT => {
           return connectDecoder.decode(startPos,messageType, dupFlag, qosLevel, retainFlag, length, stream)
         }
-        case CommandType.DISCONNECT => {
-          return disconnectDecoder.decode(startPos,messageType, dupFlag, qosLevel, retainFlag, length, stream)
-        }
         case CommandType.PUBLISH => {
           return publishDecoder.decode(startPos,messageType, dupFlag, qosLevel, retainFlag, length, stream)
         }
@@ -63,14 +59,8 @@ class MqttDecoder {
         case CommandType.UNSUBSCRIBE => {
           return unsubscribeDecoder.decode(startPos,messageType, dupFlag, qosLevel, retainFlag, length, stream)
         }
-        case CommandType.PINGREQ => {
-          return pingreqDecoder.decode(startPos,messageType, dupFlag, qosLevel, retainFlag, length, stream)
-        }
-        case CommandType.PUBREL => {
-          return pubrelDecoder.decode(startPos,messageType, dupFlag, qosLevel, retainFlag, length, stream)
-        }
         case _ => {
-
+          return defaultDecoder.decode(startPos,messageType, dupFlag, qosLevel, retainFlag, length, stream)
         }
       }
     }

@@ -62,7 +62,6 @@ package io.ubiqesh.central.mqtt.commands
  * @param password - If the Password flag is set, the Password field is mandatory, otherwise
  *                 its value is disregarded. It is not valid to supply a password without
  *                 supplying a user
- * @author <a href="http://twitter.com/aloyer">@aloyer</a>
  */
 class Connect(override val messageType: CommandType.Value,
               override val DUP: Boolean,
@@ -75,7 +74,8 @@ class Connect(override val messageType: CommandType.Value,
               val keepAliveInSeconds: Int,
               val clientId: String,
               val username: Option[String],
-              val password: Option[String]) extends Command(messageType, DUP, QoS,retain, remainingLength)
+              val password: Option[String])
+  extends Command(messageType, DUP, QoS,retain, remainingLength)
 
 /**
  * MQTT V3.1 Protocol Specification - section 3.2

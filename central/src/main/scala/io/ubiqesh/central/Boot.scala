@@ -25,7 +25,6 @@ object Boot extends App {
     .setClientAuthRequired(false)
     .setTCPKeepAlive(true)
     .setTCPNoDelay(true)
-    .connectHandler({ socket:NetSocket => {
-    mqttServer.registerClient(socket)
-  }}).listen(1883)
+    .connectHandler({ socket:NetSocket => mqttServer.registerClient(socket)})
+    .listen(1883)
 }

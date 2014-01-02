@@ -2,7 +2,7 @@ package io.ubiqesh.central.mqtt.commands
 
 
 /**
- *
+ * MQTT V3.1 Protocol Specification - section 2.1
  */
 object CommandType extends Enumeration {
   /**
@@ -87,7 +87,7 @@ object CommandType extends Enumeration {
 }
 
 /**
- *
+ * MQTT V3.1 Protocol Specification - section 2.1
  */
 object QosLevel extends Enumeration {
   /**
@@ -147,6 +147,9 @@ object QosLevel extends Enumeration {
   val R3 = Value(3)
 }
 
+/**
+ * Simple tuple for holding topic information
+ */
 case class Topic(pattern:String, QOS:QosLevel.Value)
 
 class PathMatcher {

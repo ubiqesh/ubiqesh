@@ -13,6 +13,7 @@ package io.ubiqesh.central.mqtt.commands
  *            on to detect duplicates.
  * @param QoS    This flag indicates the level of assurance for delivery of a PUBLISH
  *               message.
+ *               @see QosLevel
  * @param retain This flag is only used on PUBLISH messages. When a client sends a
  *               PUBLISH to a server, if the Retain flag is set (1), the server should
  *               hold on to the message after it has been delivered to the current subscribers.<br/>
@@ -33,7 +34,6 @@ package io.ubiqesh.central.mqtt.commands
  *               zero-length payload and the Retain flag set on the same topic.<br/>
  * @param remainingLength Represents the number of bytes remaining within the current message,
  *               including data in the variable header and the payload
- * @see QosLevel
  */
 class Command(val messageType: CommandType.Value,
                  val DUP: Boolean,
