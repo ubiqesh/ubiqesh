@@ -1,7 +1,7 @@
 apply plugin: 'scala'
 apply plugin: 'java'
 apply plugin: 'application'
-apply plugin: 'pkg4j'
+//apply plugin: 'pkg4j'
 
 group = 'ubiqesh'
 version = '1.0'
@@ -24,7 +24,7 @@ jar {
         attributes 'Implementation-Title': 'Ubiqesh Uplink', 'Implementation-Version': 1.0
     }
 }
-
+/*
 applicationDistribution.from(jar) {
     into(project.name) {
         from 'pkg/conf/*'
@@ -32,6 +32,7 @@ applicationDistribution.from(jar) {
     }
 }
 pkg {
+
     name = "ubiqesh-uplink"
     description = "ubiqesh-uplink app"
     changes = "pkg/changelog.txt"
@@ -53,8 +54,8 @@ pkg {
     postinst { exec "update-rc.d ubiqesh-uplink defaults 90 20" }
     prerm { exec "update-rc.d -f ubiqesh-uplink remove" }
 }
-
 buildDeb.dependsOn installApp
+*/
 
 // Pull the plugin from Maven Central
 buildscript {
@@ -63,7 +64,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "org.jamel.pkg4j:pkg4j-gradle:0.0.6-SNAPSHOT"
+//        classpath "org.jamel.pkg4j:pkg4j-gradle:0.0.6-SNAPSHOT"
     }
 }
 
